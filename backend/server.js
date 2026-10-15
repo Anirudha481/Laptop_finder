@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { GoogleGenAI, Type } = require("@google/genai");
+const cors = require("cors");
+app.use(cors());
 
 const laptops = require("./data/laptops");
 

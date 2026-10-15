@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 
 /* =========================================================
+   API CONFIGURATION (Render Production & Local Support)
+========================================================= */
+const API_BASE_URL = (
+  import.meta.env.VITE_API_URL || "https://laptop-finder-api-jw07.onrender.com"
+).replace(/\/+$/, "");
+
+/* =========================================================
    OFFLINE FALLBACK LAPTOP CATALOGUE
 ========================================================= */
 const fallbackLaptops = [
@@ -212,25 +219,33 @@ function App() {
     return `https://www.amazon.in/s?k=${encodeURIComponent(searchString)}`;
   };
 
-  // Fetch full dataset on mount
+  // Fetch full dataset on mount from live cloud API
   useEffect(() => {
-    let cancelled = false;
-    fetch("http://localhost:5000/api/laptops")
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    fetch(`${API_BASE_URL}/api/laptops`, { signal: controller.signal })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((data) => {
-        if (!cancelled && Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0) {
           setLaptops(data);
         }
       })
       .catch((err) => {
-        console.warn("Backend API offline; utilizing local dataset.", err);
+        if (err.name !== "AbortError") {
+          console.warn("Backend API offline or waking up; using fallback catalogue.", err);
+        }
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
       });
 
     return () => {
-      cancelled = true;
+      clearTimeout(timeoutId);
+      controller.abort();
     };
   }, []);
 
@@ -341,11 +356,15 @@ function App() {
     setIsAiLoading(true);
     setShowResults(false);
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 35000);
+
     try {
-      const response = await fetch("http://localhost:5000/api/ai/recommend", {
+      const response = await fetch(`${API_BASE_URL}/api/ai/recommend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
+        signal: controller.signal,
       });
 
       if (!response.ok) throw new Error(`Status ${response.status}`);
@@ -360,9 +379,10 @@ function App() {
         throw new Error("No laptops returned");
       }
     } catch (err) {
-      console.warn("AI recommendation endpoint unreachable. Initiating local engine:", err);
+      console.warn("AI recommendation endpoint unreachable or timed out. Initiating local engine:", err);
       executeLocalFallbackSearch();
     } finally {
+      clearTimeout(timeoutId);
       setIsAiLoading(false);
       setTimeout(() => {
         const resultsEl = document.querySelector(".results-section");
@@ -639,7 +659,7 @@ function App() {
               onClick={handleSearch}
               disabled={isAiLoading}
             >
-              {isAiLoading ? "🔄 Analyzing with AI..." : "✨ Analyze & Recommend with AI"}
+              {isAiLoading ? "🔄 Analyzing with Gemini AI..." : "✨ Analyze & Recommend with AI"}
             </button>
 
             <button
@@ -662,7 +682,7 @@ function App() {
             <h2>Top Recommended Laptops</h2>
             <span>
               {isAiDriven
-                ? "OpenAI analyzed your specs against the hardware catalogue and ranked the top performers below:"
+                ? "Gemini AI analyzed your specs against the hardware catalogue and ranked the top performers below:"
                 : showingAlternatives
                 ? "No exact match was found. Showing closest hardware alternatives:"
                 : "Based on your selected specifications:"}

@@ -2,14 +2,67 @@ import React, { useEffect, useState } from "react";
 import "./App.css";
 
 /* =========================================================
-   API CONFIGURATION (Render Production & Local Support)
+   API CONFIGURATION
 ========================================================= */
 const API_BASE_URL = (
   import.meta.env.VITE_API_URL || "https://laptop-finder-api-jw07.onrender.com"
 ).replace(/\/+$/, "");
 
 /* =========================================================
-   OFFLINE FALLBACK LAPTOP CATALOGUE
+   PRESET QUICK-START CHIPS DATA
+========================================================= */
+const PRESET_CHIPS = [
+  {
+    label: "💻 B.Tech CS Student",
+    config: {
+      usage: "Coding",
+      operatingSystem: "Windows",
+      processorBrand: "Intel",
+      processorSeries: "Core i5",
+      ram: "16 GB",
+      storage: "512 GB SSD",
+      budget: "₹40,000 – ₹60,000",
+    },
+  },
+  {
+    label: "🎮 AAA Gaming (Under ₹80k)",
+    config: {
+      usage: "Gaming",
+      operatingSystem: "Windows",
+      gpuBrand: "NVIDIA",
+      gpuSeries: "RTX 40 Series",
+      ram: "16 GB",
+      storage: "512 GB SSD",
+      budget: "₹60,000 – ₹80,000",
+    },
+  },
+  {
+    label: "🍏 Developer MacBook",
+    config: {
+      usage: "Coding",
+      operatingSystem: "macOS",
+      processorBrand: "Apple",
+      processorSeries: "Apple Silicon",
+      ram: "16 GB",
+      storage: "512 GB SSD",
+      budget: "Above ₹1,00,000",
+    },
+  },
+  {
+    label: "🎬 4K Video Editing",
+    config: {
+      usage: "Editing",
+      operatingSystem: "Windows",
+      gpuBrand: "NVIDIA",
+      ram: "32 GB",
+      storage: "1 TB SSD",
+      budget: "Above ₹1,00,000",
+    },
+  },
+];
+
+/* =========================================================
+   OFFLINE FALLBACK CATALOGUE
 ========================================================= */
 const fallbackLaptops = [
   {
@@ -189,6 +242,7 @@ function App() {
   const [results, setResults] = useState([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [isAiDriven, setIsAiDriven] = useState(false);
+  const [copiedLink, setCopiedLink] = useState(false);
 
   const [form, setForm] = useState({
     usage: "",
@@ -203,6 +257,7 @@ function App() {
     storage: "",
     display: "",
     budget: "",
+    maxBudget: 150000,
   });
 
   const [showResults, setShowResults] = useState(false);
@@ -211,7 +266,7 @@ function App() {
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
 
-  // Helper: Generates Amazon search or direct product link
+  // Helper: Amazon link
   const getBuyUrl = (laptop) => {
     if (!laptop) return "#";
     if (laptop.buyLink) return laptop.buyLink;
@@ -219,7 +274,25 @@ function App() {
     return `https://www.amazon.in/s?k=${encodeURIComponent(searchString)}`;
   };
 
-  // Fetch full dataset on mount from live cloud API
+  // Load state from URL Query Params on initialization
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const initialForm = { ...form };
+    let hasParams = false;
+
+    for (const [key, value] of params.entries()) {
+      if (key in initialForm) {
+        initialForm[key] = value;
+        hasParams = true;
+      }
+    }
+
+    if (hasParams) {
+      setForm(initialForm);
+    }
+  }, []);
+
+  // Fetch initial catalogue
   useEffect(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
@@ -249,13 +322,33 @@ function App() {
     };
   }, []);
 
-  // Theme Sync
+  // Sync theme
   useEffect(() => {
     document.body.classList.toggle("dark-mode", darkMode);
     localStorage.setItem("laptopfinder-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
 
-  // Handle cascaded form changes
+  // Handle preset chip click
+  const applyPreset = (presetConfig) => {
+    setForm((prev) => ({
+      ...prev,
+      ...presetConfig,
+    }));
+  };
+
+  // Share search URL feature
+  const copyShareableLink = () => {
+    const params = new URLSearchParams();
+    Object.entries(form).forEach(([key, val]) => {
+      if (val) params.set(key, val);
+    });
+
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+    navigator.clipboard.writeText(shareUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 3000);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => {
@@ -285,7 +378,6 @@ function App() {
     });
   };
 
-  // Dynamic Options
   let availableProcessorBrands = [];
   if (form.operatingSystem === "Windows") availableProcessorBrands = ["Intel", "AMD"];
   if (form.operatingSystem === "macOS") availableProcessorBrands = ["Apple"];
@@ -303,7 +395,6 @@ function App() {
   const gpuModels =
     form.gpuBrand && form.gpuSeries ? gpuData[form.gpuBrand]?.[form.gpuSeries] || [] : [];
 
-  // Local fallback ranker
   const executeLocalFallbackSearch = () => {
     const scored = laptops
       .map((laptop) => {
@@ -351,7 +442,6 @@ function App() {
     setShowResults(true);
   };
 
-  // Submit to AI backend
   const handleSearch = async () => {
     setIsAiLoading(true);
     setShowResults(false);
@@ -379,7 +469,7 @@ function App() {
         throw new Error("No laptops returned");
       }
     } catch (err) {
-      console.warn("AI recommendation endpoint unreachable or timed out. Initiating local engine:", err);
+      console.warn("AI recommendation endpoint unreachable. Initiating local engine:", err);
       executeLocalFallbackSearch();
     } finally {
       clearTimeout(timeoutId);
@@ -405,11 +495,13 @@ function App() {
       storage: "",
       display: "",
       budget: "",
+      maxBudget: 150000,
     });
     setResults([]);
     setShowResults(false);
     setShowingAlternatives(false);
     setIsAiDriven(false);
+    window.history.replaceState({}, document.title, window.location.pathname);
   };
 
   const toggleCompare = (laptop) => {
@@ -457,6 +549,24 @@ function App() {
               Specify your preferred specifications, workload, and budget. Our AI evaluates bottlenecks, 
               ranks top machines, and provides instant store purchase links.
             </p>
+
+            {/* PRESET QUICK CHIPS */}
+            <div className="presets-container">
+              <p className="presets-title">⚡ QUICK PRESET CHIPS:</p>
+              <div className="chips-grid">
+                {PRESET_CHIPS.map((chip) => (
+                  <button
+                    key={chip.label}
+                    type="button"
+                    className="preset-chip"
+                    onClick={() => applyPreset(chip.config)}
+                  >
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <a href="#finder" className="hero-button">
               Configure Specs →
             </a>
@@ -532,16 +642,21 @@ function App() {
               </select>
             </div>
 
+            {/* INTERACTIVE BUDGET SLIDER */}
             <div className="form-group">
-              <label>Target Budget</label>
-              <select name="budget" value={form.budget} onChange={handleChange}>
-                <option value="">Select Budget</option>
-                <option value="Under ₹40,000">Under ₹40,000</option>
-                <option value="₹40,000 – ₹60,000">₹40,000 – ₹60,000</option>
-                <option value="₹60,000 – ₹80,000">₹60,000 – ₹80,000</option>
-                <option value="₹80,000 – ₹1,00,000">₹80,000 – ₹1,00,000</option>
-                <option value="Above ₹1,00,000">Above ₹1,00,000</option>
-              </select>
+              <label>
+                Max Budget Cap: <strong>₹{Number(form.maxBudget).toLocaleString("en-IN")}</strong>
+              </label>
+              <input
+                type="range"
+                name="maxBudget"
+                min="30000"
+                max="300000"
+                step="5000"
+                value={form.maxBudget}
+                onChange={handleChange}
+                className="budget-slider"
+              />
             </div>
           </div>
 
@@ -660,6 +775,14 @@ function App() {
               disabled={isAiLoading}
             >
               {isAiLoading ? "🔄 Analyzing with Gemini AI..." : "✨ Analyze & Recommend with AI"}
+            </button>
+
+            <button
+              type="button"
+              className="share-btn"
+              onClick={copyShareableLink}
+            >
+              {copiedLink ? "✓ Link Copied!" : "🔗 Share Config"}
             </button>
 
             <button

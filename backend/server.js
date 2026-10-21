@@ -205,10 +205,6 @@ ${JSON.stringify(catalogSummary, null, 2)}
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
-// POST /api/ai/parse-prompt - Parse unstructured user prompts into filter JSON
 app.post("/api/ai/parse-prompt", async (req, res) => {
   try {
     const { promptText } = req.body;
@@ -237,4 +233,8 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
     console.error("Error parsing prompt with AI:", error);
     res.status(500).json({ success: false, error: "Failed to process prompt with AI" });
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });

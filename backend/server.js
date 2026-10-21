@@ -10,7 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 // Initialize Gemini API client using @google/genai
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const apiKey = process.env.GEMINI_API_KEY || "";
+const ai = new GoogleGenAI({ apiKey });
 
 /* =========================================================
    ROUTES
@@ -29,6 +30,11 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
       return res.status(400).json({ success: false, error: "Invalid prompt text provided" });
     }
 
+    if (!apiKey) {
+      console.error("GEMINI_API_KEY is missing from environment variables.");
+      return res.status(500).json({ success: false, error: "API key configuration missing on server" });
+    }
+
     const systemInstruction = `You are a hardware search parameter extractor. 
     Analyze the user's natural language request for a laptop and return ONLY a single JSON object matching these exact keys:
     {
@@ -45,13 +51,16 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
       contents: `${systemInstruction}\nUser Prompt: "${promptText}"`,
     });
 
-    const responseText = response.text.trim().replace(/^```json/i, "").replace(/```$/i, "");
-    const parsedParams = JSON.parse(responseText);
+    // Safely extract text whether response.text is a string or function
+    const rawText = typeof response.text === "function" ? response.text() : response.text;
+    const cleanedText = (rawText || "").trim().replace(/^```json/i, "").replace(/```$/i, "");
+
+    const parsedParams = JSON.parse(cleanedText);
 
     res.json({ success: true, filters: parsedParams });
   } catch (error) {
-    console.error("Error parsing prompt with AI:", error);
-    res.status(500).json({ success: false, error: "Failed to process prompt with AI" });
+    console.error("DETAILED PARSE PROMPT ERROR:", error);
+    res.status(500).json({ success: false, error: error.message || "Failed to process prompt with AI" });
   }
 });
 
@@ -59,6 +68,11 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
 app.post("/api/ai/recommend", async (req, res) => {
   try {
     const userSpecs = req.body;
+
+    if (!apiKey) {
+      console.error("GEMINI_API_KEY is missing from environment variables.");
+      return res.status(500).json({ success: false, error: "API key configuration missing on server" });
+    }
 
     const systemInstruction = `You are an expert PC hardware advisor. Analyze the requested specs against the laptop catalogue provided below.
     Rank the top laptops (up to 6) based on compatibility with the user's usage and requirements.
@@ -75,8 +89,10 @@ app.post("/api/ai/recommend", async (req, res) => {
       contents: prompt,
     });
 
-    const responseText = response.text.trim().replace(/^```json/i, "").replace(/```$/i, "");
-    const aiRankings = JSON.parse(responseText);
+    const rawText = typeof response.text === "function" ? response.text() : response.text;
+    const cleanedText = (rawText || "").trim().replace(/^```json/i, "").replace(/```$/i, "");
+    
+    const aiRankings = JSON.parse(cleanedText);
 
     const recommendedLaptops = aiRankings
       .map((rank) => {
@@ -92,8 +108,8 @@ app.post("/api/ai/recommend", async (req, res) => {
 
     res.json({ success: true, laptops: recommendedLaptops });
   } catch (error) {
-    console.error("Error generating recommendations:", error);
-    res.status(500).json({ success: false, error: "AI recommendation error" });
+    console.error("DETAILED RECOMMEND ERROR:", error);
+    res.status(500).json({ success: false, error: error.message || "AI recommendation error" });
   }
 });
 

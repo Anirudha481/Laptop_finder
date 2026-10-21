@@ -423,7 +423,9 @@ function App() {
     form.gpuBrand && form.gpuSeries ? gpuData[form.gpuBrand]?.[form.gpuSeries] || [] : [];
 
   const executeLocalFallbackSearch = () => {
+    const budgetCap = Number(form.maxBudget) || 150000;
     const scored = laptops
+      .filter((laptop) => laptop.price <= budgetCap)
       .map((laptop) => {
         let score = 0;
         let totalWeight = 0;

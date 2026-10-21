@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { GoogleGenerativeAI } = require("@google/genai");
+const { GoogleGenAI } = require("@google/genai");
 const laptopsData = require("./data/laptops");
 
 const app = express();
@@ -9,8 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini API
-const ai = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Initialize Gemini API client using @google/genai
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 /* =========================================================
    ROUTES
@@ -40,11 +40,14 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
     }
     Extract budget values (e.g. 75k = 75000, 1.2 lakh = 120000). Return raw valid JSON only without markdown codeblocks.`;
 
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const response = await model.generateContent(`${systemInstruction}\nUser Prompt: "${promptText}"`);
-    const responseText = response.response.text().trim().replace(/^```json/i, "").replace(/```$/i, "");
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `${systemInstruction}\nUser Prompt: "${promptText}"`,
+    });
 
+    const responseText = response.text.trim().replace(/^```json/i, "").replace(/```$/i, "");
     const parsedParams = JSON.parse(responseText);
+
     res.json({ success: true, filters: parsedParams });
   } catch (error) {
     console.error("Error parsing prompt with AI:", error);
@@ -65,22 +68,27 @@ app.post("/api/ai/recommend", async (req, res) => {
     - aiVerdict: (1 short sentence explaining why this laptop fits)
     Return raw JSON array only without markdown formatting or codeblocks.`;
 
-    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `${systemInstruction}\nCatalogue: ${JSON.stringify(laptopsData)}\nUser Specs: ${JSON.stringify(userSpecs)}`;
-    
-    const response = await model.generateContent(prompt);
-    const responseText = response.response.text().trim().replace(/^```json/i, "").replace(/```$/i, "");
-    
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+
+    const responseText = response.text.trim().replace(/^```json/i, "").replace(/```$/i, "");
     const aiRankings = JSON.parse(responseText);
 
-    const recommendedLaptops = aiRankings.map((rank) => {
-      const match = laptopsData.find((l) => l.id === rank.id);
-      return {
-        ...match,
-        matchScore: rank.matchScore,
-        aiVerdict: rank.aiVerdict,
-      };
-    }).filter(Boolean);
+    const recommendedLaptops = aiRankings
+      .map((rank) => {
+        const match = laptopsData.find((l) => l.id === rank.id);
+        if (!match) return null;
+        return {
+          ...match,
+          matchScore: rank.matchScore,
+          aiVerdict: rank.aiVerdict,
+        };
+      })
+      .filter(Boolean);
 
     res.json({ success: true, laptops: recommendedLaptops });
   } catch (error) {
@@ -90,7 +98,7 @@ app.post("/api/ai/recommend", async (req, res) => {
 });
 
 /* =========================================================
-   START SERVER (Must be at the very end)
+   START SERVER
 ========================================================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

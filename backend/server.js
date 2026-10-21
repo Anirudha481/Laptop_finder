@@ -208,3 +208,33 @@ ${JSON.stringify(catalogSummary, null, 2)}
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+// POST /api/ai/parse-prompt - Parse unstructured user prompts into filter JSON
+app.post("/api/ai/parse-prompt", async (req, res) => {
+  try {
+    const { promptText } = req.body;
+    if (!promptText || typeof promptText !== "string") {
+      return res.status(400).json({ success: false, error: "Invalid prompt text provided" });
+    }
+
+    const systemInstruction = `You are a hardware search parameter extractor. 
+    Analyze the user's natural language request for a laptop and return ONLY a single JSON object matching these exact keys:
+    {
+      "usage": "Student" | "Coding" | "Gaming" | "Editing" | "Design" | "Business" | "",
+      "operatingSystem": "Windows" | "macOS" | "",
+      "ram": "8 GB" | "16 GB" | "24 GB" | "32 GB" | "64 GB" | "",
+      "storage": "256 GB SSD" | "512 GB SSD" | "1 TB SSD" | "2 TB SSD" | "",
+      "maxBudget": number | 150000
+    }
+    Extract budget values (e.g. 75k = 75000, 1.2 lakh = 120000). Return raw valid JSON only without markdown codeblocks.`;
+
+    const model = ai.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const response = await model.generateContent(`${systemInstruction}\nUser Prompt: "${promptText}"`);
+    const responseText = response.response.text().trim().replace(/^```json/i, "").replace(/```$/i, "");
+
+    const parsedParams = JSON.parse(responseText);
+    res.json({ success: true, filters: parsedParams });
+  } catch (error) {
+    console.error("Error parsing prompt with AI:", error);
+    res.status(500).json({ success: false, error: "Failed to process prompt with AI" });
+  }
+});

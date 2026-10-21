@@ -1004,3 +1004,60 @@ footer small {
 .share-btn:hover {
   background: #2c7a7b;
 }
+/* =========================================================
+   NATURAL LANGUAGE PROMPT INPUT STYLES
+========================================================= */
+.prompt-box-container {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+
+.prompt-box-container label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+  color: #e2e8f0;
+}
+
+.prompt-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.prompt-input-group input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #4a5568;
+  background: #1a202c;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.prompt-input-group input::placeholder {
+  color: #a0aec0;
+}
+
+.prompt-parse-btn {
+  background: #805ad5;
+  color: #ffffff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.prompt-parse-btn:hover {
+  background: #6b46c1;
+}
+
+.prompt-parse-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

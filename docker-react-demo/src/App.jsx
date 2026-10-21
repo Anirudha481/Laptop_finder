@@ -265,6 +265,8 @@ function App() {
   const [selectedLaptop, setSelectedLaptop] = useState(null);
   const [compareList, setCompareList] = useState([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [promptText, setPromptText] = useState("");
+  const [isParsingPrompt, setIsParsingPrompt] = useState(false);
 
   // Helper: Amazon link
   const getBuyUrl = (laptop) => {
@@ -347,6 +349,31 @@ function App() {
     navigator.clipboard.writeText(shareUrl);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 3000);
+  };
+
+  const handlePromptParse = async () => {
+    if (!promptText.trim()) return;
+    setIsParsingPrompt(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/ai/parse-prompt`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ promptText }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.filters) {
+        setForm((prev) => ({
+          ...prev,
+          ...data.filters,
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to parse prompt:", err);
+    } finally {
+      setIsParsingPrompt(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -582,7 +609,26 @@ function App() {
           <h2>Tell Us What You Need</h2>
           <span>Configure requirements below to retrieve tailored recommendations.</span>
         </div>
-
+        <div className="prompt-box-container">
+            <label>🤖 Describe What You Need in Plain English</label>
+            <div className="prompt-input-group">
+              <input
+                type="text"
+                  placeholder="e.g. I need a gaming laptop for Valorant and video editing under ₹80k with 16GB RAM"
+                  value={promptText}
+                  onChange={(e) => setPromptText(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handlePromptParse()}
+              />
+              <button
+                type="button"
+                onClick={handlePromptParse}
+                disabled={isParsingPrompt}
+                className="prompt-parse-btn"
+              >
+                {isParsingPrompt ? "Parsing..." : "✨ Auto-Fill Form"}
+              </button>
+            </div>
+        </div>        
         <div className="finder-card">
           <div className="filter-grid">
             <div className="form-group">

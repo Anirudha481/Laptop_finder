@@ -47,7 +47,7 @@ app.post("/api/ai/parse-prompt", async (req, res) => {
     Extract budget values (e.g. 75k = 75000, 1.2 lakh = 120000). Return raw valid JSON only without markdown codeblocks.`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-pro",
       contents: `${systemInstruction}\nUser Prompt: "${promptText}"`,
     });
 
@@ -85,7 +85,7 @@ app.post("/api/ai/recommend", async (req, res) => {
     const prompt = `${systemInstruction}\nCatalogue: ${JSON.stringify(laptopsData)}\nUser Specs: ${JSON.stringify(userSpecs)}`;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-pro",
       contents: prompt,
     });
 

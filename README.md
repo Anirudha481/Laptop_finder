@@ -77,7 +77,7 @@ Laptop_finder/
 │   ├── package.json            # Backend scripts and dependencies
 │   ├── server.js               # Express application entry & Groq AI routes
 │   └── .env                    # Local environment variables (git-ignored)
-├── docker-react-demo/          # Frontend React client directory
+├── frontend/                   # Frontend React client directory
 │   ├── public/
 │   ├── src/
 │   │   ├── App.css             # Responsive styling, tables, modals & tokens
@@ -132,11 +132,11 @@ The backend will launch at `http://localhost:5000`.
 ### 3. Configure & Run Frontend
 In a new terminal window:
 ```bash
-cd docker-react-demo
+cd frontend
 npm install
 ```
 
-*(Optional for local testing)* Create a `.env` file inside `docker-react-demo/`:
+*(Optional for local testing)* Create a `.env` file inside `frontend/`:
 ```env
 VITE_API_URL=http://localhost:5000
 ```
@@ -246,7 +246,7 @@ Open your browser at `http://localhost:5173`.
 
 ### Frontend (Vercel)
 1. Import the repository in [Vercel](https://vercel.com).
-2. Set the **Root Directory** to `docker-react-demo`.
+2. Set the **Root Directory** to `frontend`.
 3. Add the following **Environment Variable**:
    - `VITE_API_URL`: `https://laptop-finder-api-jw07.onrender.com` (your deployed backend URL)
 4. Deploy!

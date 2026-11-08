@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import "./App.css";
+import {FallingLeaves} from "falling-leaves/react";
 
 /* =========================================================
    API CONFIGURATION
@@ -716,6 +717,10 @@ function App() {
 
   return (
     <div className="app">
+      <FallingLeaves 
+          fullScreen
+          shapes = {["maple", "oak", "cherry", "ginkgo", "maple-leaf", "autumn-leaf"]}
+        />
       {/* =========================================================
           NAVBAR (SLEEK FROSTED GLASS)
       ========================================================= */}

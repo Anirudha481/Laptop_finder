@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LaptopFinder AI — Living Design System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════════════════ */
+    :root {
+      /* Surfaces */
+      --paper:  #f5eedf;
+      --card:   #fffaf0;
+      --sunk:   #ebe2cf;
+      --hover:  #e0d4bb;
+
+      /* Text */
+      --ink:    #1d1712;
+      --ink-2:  #5a4e40;
+      --muted:  #6e6150;
+      --line:   rgba(29,23,18,.16);
+
+      /* Accents */
+      --hot:      #d73a12;  --on-hot:   #fff;
+      --blue:     #2b3fe0;  --on-blue:  #fff;
+      --sun:      #ffbf1f;
+      --teal:     #0e7c6b;  --on-teal:  #fff;
+      --amazon:   #ffb000;
+
+      /* Elevation */
+      --shadow: 0 14px 30px -14px rgba(60,30,0,.4), 0 2px 4px rgba(60,30,0,.08);
+
+      /* Motion */
+      --ease: cubic-bezier(.16,1,.3,1);
+      --t-fast: .15s ease;
+      --t-mid:  .25s var(--ease);
+      --t-slow: .3s  var(--ease);
+
+      /* Typography */
+      --display: "Bricolage Grotesque", system-ui, sans-serif;
+      --body:    "Hanken Grotesk",    system-ui, sans-serif;
+
+      /* Spacing (4px base) */
+      --sp-1:  0.25rem;  /* 4px  */
+      --sp-2:  0.5rem;   /* 8px  */
+      --sp-3:  0.75rem;  /* 12px */
+      --sp-4:  1rem;     /* 16px */
+      --sp-5:  1.25rem;  /* 20px */
+      --sp-6:  1.5rem;   /* 24px */
+      --sp-7:  2rem;     /* 32px */
+      --sp-8:  2.5rem;   /* 40px */
+      --sp-9:  3.5rem;   /* 56px */
+      --sp-10: 5rem;     /* 80px */
+
+      /* Radii */
+      --r-xs:     4px;
+      --r-sm:     8px;
+      --r-md:     12px;
+      --r-lg:     18px;
+      --r-xl:     22px;
+      --r-pill:   99px;
+      --r-circle: 50%;
+
+      /* Borders */
+      --b-ink:    2px solid var(--ink);
+      --b-soft:   1.5px solid var(--ink);
+      --b-subtle: 1px solid var(--line);
+    }
+
+    [data-theme="dark"] {
+      --paper: #15110d; --card: #1f1913; --sunk: #2a2219; --hover: #382d20;
+      --ink:   #f6efe2; --ink-2: #cbbda6; --muted: #a39583; --line: rgba(246,239,226,.16);
+      --hot: #ff6a3d; --on-hot: #1c0a03;
+      --blue: #8794ff; --on-blue: #0b0f33;
+      --teal: #3fd6b8; --on-teal: #04201a;
+      --shadow: 0 14px 30px -14px rgba(0,0,0,.7), 0 2px 4px rgba(0,0,0,.3);
+    }
+
+    /* ═══════════════════════════════════════════════════
+       GUIDE CHROME
+    ═══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font: 400 1rem/1.6 var(--body);
+      -webkit-font-smoothing: antialiased;
+      transition: background .25s, color .25s;
+    }
+    ::selection { background: var(--sun); color: #1d1712; }
+    :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+    [data-theme="dark"] :focus-visible { outline-color: var(--sun); }
+
+    /* Guide top nav */
+    .g-nav {
+      position: sticky; top: 0; z-index: 900;
+      background: var(--paper); border-bottom: var(--b-ink);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .8rem 2rem; gap: 1rem;
+    }
+    .g-logo { font: 800 1.4rem var(--display); letter-spacing: -.03em; }
+    .g-logo span { color: var(--hot); }
+    .g-links { display: flex; gap: 1.5rem; list-style: none; }
+    .g-links a { color: var(--ink); font-weight: 600; font-size: .9rem; text-decoration: none; }
+    .g-links a:hover { color: var(--hot); }
+    .g-toggle {
+      cursor: pointer; background: transparent; border: var(--b-ink);
+      border-radius: var(--r-circle); width: 36px; height: 36px;
+      display: grid; place-items: center; font-size: 1rem;
+      transition: transform var(--t-mid), background var(--t-fast);
+    }
+    .g-toggle:hover { transform: rotate(20deg); background: var(--sun); }
+
+    /* Layout */
+    .g-wrap { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+    .g-sidebar {
+      position: sticky; top: 57px; height: calc(100vh - 57px); overflow-y: auto;
+      border-right: var(--b-ink); padding: 2rem 1rem;
+      scrollbar-width: thin; scrollbar-color: var(--hot) transparent;
+    }
+    .g-sidebar nav { display: flex; flex-direction: column; gap: .3rem; }
+    .g-sidebar a {
+      display: block; padding: .4rem .75rem; border-radius: var(--r-sm);
+      color: var(--ink-2); font-size: .88rem; font-weight: 600; text-decoration: none;
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .g-sidebar a:hover { background: var(--sunk); color: var(--ink); }
+    .g-sidebar .nav-group { font-size: .72rem; font-weight: 800; text-transform: uppercase;
+      letter-spacing: .09em; color: var(--muted); padding: 1rem .75rem .3rem; }
+    .g-content { padding: 3rem 3rem 6rem; max-width: 1000px; }
+
+    /* Section headings */
+    .section { margin-bottom: 5rem; }
+    .section-title {
+      font: 800 2.2rem var(--display); letter-spacing: -.04em;
+      border-bottom: var(--b-ink); padding-bottom: .75rem; margin-bottom: 2rem;
+    }
+    .section-title span { color: var(--hot); }
+    .sub-title {
+      font: 700 1.1rem var(--display); letter-spacing: -.02em;
+      margin: 2rem 0 1rem; color: var(--ink-2);
+    }
+    .rule-label {
+      display: inline-block; font: 800 .68rem var(--body);
+      text-transform: uppercase; letter-spacing: .08em;
+      background: var(--sunk); padding: .15rem .55rem;
+      border-radius: var(--r-xs); margin-bottom: .5rem;
+    }
+    .token-pill {
+      display: inline-block; font: 600 .8rem var(--body);
+      background: var(--sunk); border: var(--b-subtle);
+      border-radius: var(--r-sm); padding: .2rem .6rem;
+      font-family: monospace; white-space: nowrap;
+    }
+
+    /* ═══════════════════════════════════════════════════
+       §1 COLOUR SWATCHES
+    ═══════════════════════════════════════════════════ */
+    .swatch-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem; }
+    .swatch {
+      border-radius: var(--r-md); overflow: hidden;
+      border: var(--b-ink); box-shadow: var(--shadow);
+    }
+    .swatch-color { height: 80px; }
+    .swatch-info { padding: .6rem .8rem; background: var(--card); }
+    .swatch-name { font: 700 .8rem var(--body); }
+    .swatch-hex  { font: 400 .75rem monospace; color: var(--muted); }
+
+    /* ═══════════════════════════════════════════════════
+       §2 TYPE SCALE
+    ═══════════════════════════════════════════════════ */
+    .type-row {
+      display: flex; align-items: baseline; gap: 1.5rem;
+      border-bottom: var(--b-subtle); padding: .75rem 0;
+    }
+    .type-meta { min-width: 180px; font-size: .78rem; color: var(--muted); }
+    .type-meta code { font-size: .72rem; background: var(--sunk); padding: .1rem .35rem; border-radius: 4px; }
+
+    /* ═══════════════════════════════════════════════════
+       §3 SPACING
+    ═══════════════════════════════════════════════════ */
+    .spacing-row { display: flex; align-items: center; gap: 1rem; padding: .4rem 0; border-bottom: var(--b-subtle); }
+    .spacing-bar { background: var(--hot); height: 20px; border-radius: 2px; flex-shrink: 0; }
+    .spacing-label { min-width: 80px; font: 700 .82rem monospace; }
+    .spacing-value { font-size: .8rem; color: var(--muted); }
+
+    /* ═══════════════════════════════════════════════════
+       §4 BORDER RADII
+    ═══════════════════════════════════════════════════ */
+    .radius-grid { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: flex-end; }
+    .radius-swatch {
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+    }
+    .radius-box {
+      width: 64px; height: 64px; background: var(--hot);
+      border: var(--b-ink);
+    }
+    .radius-label { font-size: .78rem; font-weight: 700; text-align: center; }
+
+    /* ═══════════════════════════════════════════════════
+       §5 BUTTONS
+    ═══════════════════════════════════════════════════ */
+    .component-row {
+      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+      padding: 1.5rem; background: var(--sunk); border-radius: var(--r-lg);
+      border: var(--b-ink); margin-bottom: 1.5rem;
+    }
+    .state-label {
+      width: 100%; font: 800 .68rem var(--body); text-transform: uppercase;
+      letter-spacing: .09em; color: var(--muted); margin-bottom: -.25rem;
+    }
+
+    /* Button base */
+    .btn { cursor: pointer; font: inherit; display: inline-flex; align-items: center; gap: .5rem; }
+
+    /* Primary */
+    .btn-primary {
+      background: var(--hot); color: var(--on-hot);
+      border: var(--b-ink); border-radius: var(--r-md);
+      padding: .85rem 1.5rem; font-weight: 800;
+      box-shadow: var(--shadow);
+      transition: filter var(--t-fast), transform var(--t-mid);
+    }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    .btn-primary:active { transform: translateY(0); filter: brightness(.95); }
+    .btn-primary:disabled { opacity: .55; cursor: wait; transform: none; filter: none; }
+
+    /* Secondary */
+    .btn-secondary {
+      background: transparent; color: var(--ink);
+      border: var(--b-soft); border-radius: var(--r-md);
+      padding: .85rem 1.5rem; font-weight: 700;
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .btn-secondary:hover { background: var(--ink); color: var(--paper); }
+    .btn-secondary:active { opacity: .85; }
+    .btn-secondary:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* Ghost */
+    .btn-ghost {
+      background: transparent; color: var(--hot);
+      border: none; padding: .5rem .75rem; font-weight: 700; font-size: .9rem;
+      text-decoration: underline; text-underline-offset: 3px;
+      transition: color var(--t-fast);
+    }
+    .btn-ghost:hover { color: var(--ink); }
+    .btn-ghost:disabled { color: var(--muted); cursor: not-allowed; text-decoration: none; }
+
+    /* Amazon */
+    .btn-amazon {
+      background: var(--amazon); color: #1d1712;
+      border: none; border-radius: var(--r-md);
+      padding: .85rem 1.5rem; font-weight: 800;
+      transition: filter var(--t-fast);
+    }
+    .btn-amazon:hover { filter: brightness(1.08); }
+    .btn-amazon:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* Icon-only circle */
+    .btn-icon {
+      width: 38px; height: 38px; border-radius: var(--r-circle);
+      border: var(--b-ink); background: transparent;
+      display: grid; place-items: center; cursor: pointer; font-size: 1rem;
+      transition: transform var(--t-mid), background var(--t-fast);
+    }
+    .btn-icon:hover { transform: rotate(20deg); background: var(--sun); }
+
+    /* ═══════════════════════════════════════════════════
+       §6 PILLS & CHIPS
+    ═══════════════════════════════════════════════════ */
+    .pill-filter {
+      cursor: pointer; background: transparent; border: 1.5px solid var(--line);
+      border-radius: var(--r-md); padding: .55rem .85rem;
+      font: 600 .88rem var(--body); color: var(--ink);
+      transition: border-color var(--t-fast), background var(--t-fast), color var(--t-fast);
+    }
+    .pill-filter:hover { border-color: var(--ink); }
+    .pill-filter.is-selected { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .pill-filter:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+    .pill-filter:disabled { opacity: .45; cursor: not-allowed; }
+
+    .chip-dismiss {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--card); border: 1.5px solid var(--ink);
+      border-radius: var(--r-pill); padding: .25rem .7rem;
+      font: 600 .78rem var(--body); cursor: pointer;
+      transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+    }
+    .chip-dismiss:hover { background: var(--hot); color: var(--on-hot); border-color: var(--hot); }
+    .chip-dismiss .x { font-size: .7rem; opacity: .7; }
+
+    .chip-prompt {
+      cursor: pointer; background: transparent; border: 1.5px solid var(--ink);
+      border-radius: var(--r-pill); padding: .35rem .85rem;
+      font: 600 .85rem var(--body);
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .chip-prompt:hover { background: var(--ink); color: var(--paper); }
+
+    /* ═══════════════════════════════════════════════════
+       §7 BADGES & TAGS
+    ═══════════════════════════════════════════════════ */
+    .tag-badge {
+      display: inline-block; font: 800 .72rem var(--body);
+      text-transform: uppercase; letter-spacing: .06em;
+      padding: .2rem .7rem; border-radius: var(--r-pill);
+    }
+    .tag-badge.is-ai   { background: var(--blue); color: var(--on-blue); }
+    .tag-badge.is-alt  { background: var(--sun);  color: #1d1712; }
+    .tag-badge.is-live { background: var(--teal); color: var(--on-teal); }
+    .tag-badge.is-hot  { background: var(--hot);  color: var(--on-hot); }
+
+    .match-bubble {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 68px; height: 68px; border-radius: var(--r-circle);
+      background: var(--paper); border: var(--b-ink);
+      transform: rotate(-8deg);
+    }
+    .match-num  { font: 800 1.2rem/1 var(--display); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+    .match-unit { font: 800 .6rem var(--body); text-transform: uppercase; letter-spacing: .07em; color: var(--ink-2); }
+
+    /* ═══════════════════════════════════════════════════
+       §8 INPUT STATES
+    ═══════════════════════════════════════════════════ */
+    .input-wrap {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .5rem .5rem .5rem 1.2rem;
+      background: var(--card); border: var(--b-ink);
+      border-radius: var(--r-md); box-shadow: none;
+      transition: box-shadow var(--t-fast);
+    }
+    .input-wrap:focus-within {
+      box-shadow: 0 0 0 4px var(--sun), var(--shadow);
+    }
+    .input-wrap input {
+      flex: 1; min-width: 0; background: transparent; border: none; outline: none;
+      font: 400 1rem var(--body); color: var(--ink); caret-color: var(--hot);
+    }
+    .input-wrap input::placeholder { color: var(--muted); }
+
+    .field-group { display: flex; flex-direction: column; gap: .4rem; }
+    .field-label { font: 700 .82rem var(--body); }
+    .field-input {
+      background: var(--card); border: 1.5px solid var(--line);
+      border-radius: var(--r-sm); padding: .55rem .75rem;
+      font: 400 .9rem var(--body); color: var(--ink);
+      transition: border-color var(--t-fast);
+      outline: none;
+    }
+    .field-input:focus { border-color: var(--blue); }
+    .field-input.is-valid   { border-color: var(--teal); }
+    .field-input.is-invalid { border-color: var(--hot); }
+    .field-hint { font: 400 .78rem var(--body); color: var(--muted); }
+    .field-error { font: 600 .78rem var(--body); color: var(--hot); }
+    .field-success { font: 600 .78rem var(--body); color: var(--teal); }
+
+    /* ═══════════════════════════════════════════════════
+       §9 PERSONA CARDS
+    ═══════════════════════════════════════════════════ */
+    .persona-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .persona-card {
+      display: flex; flex-direction: column;
+      min-height: 200px; padding: 1.4rem;
+      background: var(--c, var(--sun)); color: var(--on, #1d1712);
+      border: var(--b-ink); border-radius: var(--r-lg);
+      cursor: pointer; transition: transform var(--t-mid);
+    }
+    .persona-card:hover { transform: translateY(-5px); }
+    .persona-card.is-active { outline: 4px solid var(--ink); outline-offset: 3px; }
+    .persona-card.is-student { --c: var(--sun);  --on: #1d1712; }
+    .persona-card.is-gaming  { --c: var(--hot);  --on: var(--on-hot); }
+    .persona-card.is-macbook { --c: var(--blue); --on: var(--on-blue); }
+    .persona-card.is-creator { --c: var(--teal); --on: var(--on-teal); }
+    .persona-badge {
+      font: 800 .68rem var(--body); text-transform: uppercase; letter-spacing: .05em;
+      border: 1.5px solid currentColor; border-radius: var(--r-pill); padding: .1rem .55rem;
+      width: fit-content;
+    }
+    .persona-title { font: 800 1.4rem var(--display); letter-spacing: -.03em; margin: auto 0 .5rem; padding-top: 2rem; }
+    .persona-desc  { font-size: .88rem; }
+
+    /* ═══════════════════════════════════════════════════
+       §10 LAPTOP CARD
+    ═══════════════════════════════════════════════════ */
+    .laptop-card {
+      background: var(--card); border: var(--b-ink);
+      border-radius: var(--r-lg); overflow: hidden;
+      transition: transform var(--t-slow), box-shadow var(--t-slow);
+    }
+    .laptop-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+    .laptop-card-img {
+      height: 180px; background: var(--sun); border-bottom: var(--b-ink);
+      display: flex; align-items: center; justify-content: center;
+      font: 800 3rem var(--display); color: rgba(0,0,0,.2);
+      overflow: hidden; position: relative;
+    }
+    .laptop-card-img-inner {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font: 800 4rem var(--display); opacity: .2;
+      transition: transform var(--t-slow);
+    }
+    .laptop-card:hover .laptop-card-img-inner { transform: scale(1.06); }
+    .laptop-card-body { padding: 1.3rem; }
+    .laptop-brand { font: 800 .76rem var(--body); text-transform: uppercase; letter-spacing: .09em; color: var(--hot); }
+    .laptop-title { font: 700 1.2rem var(--body); letter-spacing: -.02em; line-height: 1.2; margin: .3rem 0 .6rem; }
+    .laptop-price { font: 800 1.9rem var(--display); letter-spacing: -.035em; font-variant-numeric: tabular-nums; }
+    .laptop-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .4rem; margin-top: 1rem; }
+    .btn-card {
+      background: transparent; border: 1.5px solid var(--ink); border-radius: var(--r-md);
+      padding: .55rem .2rem; font: 700 .8rem var(--body); cursor: pointer; color: var(--ink);
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .btn-card:hover { background: var(--ink); color: var(--paper); }
+    .btn-card.is-active { background: var(--blue); color: var(--on-blue); border-color: var(--blue); }
+    .btn-card-buy {
+      display: flex; align-items: center; justify-content: center;
+      background: var(--amazon); color: #1d1712; border: none; border-radius: var(--r-md);
+      padding: .55rem; font: 800 .8rem var(--body); cursor: pointer;
+      transition: filter var(--t-fast);
+    }
+    .btn-card-buy:hover { filter: brightness(1.08); }
+
+    /* ═══════════════════════════════════════════════════
+       §11 SPINNER & LOADING
+    ═══════════════════════════════════════════════════ */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes shimmer {
+      0%   { background-position: -400px 0; }
+      100% { background-position:  400px 0; }
+    }
+    .spinner {
+      border-radius: var(--r-circle); display: inline-block;
+      border-style: solid; border-top-color: currentColor;
+      animation: spin .8s linear infinite;
+      border-color: color-mix(in srgb, currentColor 30%, transparent);
+      border-top-color: currentColor;
+    }
+    .spinner.sm { width: 14px; height: 14px; border-width: 2px; }
+    .spinner.md { width: 28px; height: 28px; border-width: 3px; }
+    .spinner.lg { width: 48px; height: 48px; border-width: 4px; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--sunk) 25%, var(--hover) 50%, var(--sunk) 75%);
+      background-size: 400px 100%;
+      animation: shimmer 1.4s ease-in-out infinite;
+      border-radius: var(--r-sm);
+    }
+    .skel-line { height: 1rem; margin-bottom: .5rem; }
+    .skel-title { height: 1.6rem; width: 60%; margin-bottom: .75rem; }
+    .skel-box { height: 160px; border-radius: var(--r-lg); border: var(--b-ink); }
+
+    /* ═══════════════════════════════════════════════════
+       §12 EMPTY STATE
+    ═══════════════════════════════════════════════════ */
+    .empty-state {
+      text-align: center; padding: 3.5rem 2rem;
+      border: 2px dashed var(--ink); border-radius: var(--r-lg);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: .4; }
+    .empty-title { font: 800 1.6rem var(--display); letter-spacing: -.03em; margin-bottom: .5rem; }
+    .empty-desc  { max-width: 44ch; margin: 0 auto 1.5rem; color: var(--ink-2); }
+
+    /* ═══════════════════════════════════════════════════
+       §13 MOTION DEMOS
+    ═══════════════════════════════════════════════════ */
+    @keyframes rise { from { opacity: 0; transform: translateY(26px); } }
+    @keyframes dock-in { from { transform: translate(-50%, 90px); opacity: 0; } }
+    @keyframes zoom-in { from { transform: scale(.96); opacity: 0; } }
+    @keyframes fade-in { from { opacity: 0; } }
+
+    .motion-box {
+      background: var(--sunk); border: var(--b-ink); border-radius: var(--r-lg);
+      padding: 2rem; display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center;
+    }
+    .motion-demo {
+      display: flex; flex-direction: column; align-items: center; gap: .75rem;
+    }
+    .motion-label { font: 700 .78rem var(--body); color: var(--muted); text-align: center; }
+    .motion-trigger {
+      background: var(--card); border: var(--b-ink); border-radius: var(--r-md);
+      padding: 1rem 1.5rem; cursor: pointer; font: 700 .88rem var(--body);
+      transition: transform var(--t-mid), background var(--t-fast), box-shadow var(--t-slow);
+    }
+    .motion-trigger:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+    .motion-trigger.scale:hover { transform: scale(1.06); }
+    .motion-trigger.rotate:hover { transform: rotate(20deg); background: var(--sun); }
+    .motion-trigger.brightness:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+    /* ═══════════════════════════════════════════════════
+       §14 SEGMENTED SWITCH
+    ═══════════════════════════════════════════════════ */
+    .seg-switch { display: flex; border: var(--b-ink); border-radius: var(--r-md); overflow: hidden; }
+    .seg-btn {
+      flex: 1; background: transparent; border: 0; padding: .55rem .75rem;
+      font: 700 .88rem var(--body); cursor: pointer; color: var(--ink);
+      transition: background var(--t-fast), color var(--t-fast);
+    }
+    .seg-btn + .seg-btn { border-left: var(--b-ink); }
+    .seg-btn.is-active { background: var(--ink); color: var(--paper); }
+    .seg-btn:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+    /* ═══════════════════════════════════════════════════
+       §15 COMPARE DOCK PREVIEW
+    ═══════════════════════════════════════════════════ */
+    .dock-preview {
+      display: inline-flex; align-items: center; gap: 1rem;
+      background: #1d1712; color: #f6efe2; border: 2px solid var(--sun);
+      border-radius: var(--r-pill); padding: .6rem 1.2rem;
+      box-shadow: 0 18px 36px -12px rgba(0,0,0,.55);
+    }
+    .dock-avatar {
+      width: 42px; height: 42px; border-radius: var(--r-circle);
+      border: 2px solid var(--sun); overflow: hidden; background: #333;
+      display: flex; align-items: center; justify-content: center; font-size: .7rem;
+    }
+    .dock-btn-compare {
+      background: var(--sun); color: #1d1712; border: none;
+      border-radius: var(--r-pill); padding: .5rem 1.1rem;
+      font: 800 .85rem var(--body); cursor: pointer;
+      transition: filter var(--t-fast);
+    }
+    .dock-btn-compare:hover { filter: brightness(1.08); }
+
+    /* ═══════════════════════════════════════════════════
+       §16 SPEC TAG GRID
+    ═══════════════════════════════════════════════════ */
+    .spec-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; }
+    .spec-tag {
+      display: flex; flex-direction: column; padding: .45rem .6rem;
+      border: 1px solid var(--line); border-radius: var(--r-sm);
+    }
+    .spec-key { font: 800 .63rem var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .spec-val { font: 600 .86rem var(--body); }
+
+    /* ═══════════════════════════════════════════════════
+       §17 Z-INDEX STACK
+    ═══════════════════════════════════════════════════ */
+    .stack-diagram { display: flex; flex-direction: column-reverse; gap: .5rem; max-width: 400px; }
+    .stack-layer {
+      display: flex; align-items: center; gap: 1rem;
+      padding: .6rem 1rem; border-radius: var(--r-sm);
+      border: 1.5px solid var(--ink); font: 700 .85rem var(--body);
+    }
+    .z-val { font: 800 1rem monospace; min-width: 50px; color: var(--hot); }
+
+    /* ═══════════════════════════════════════════════════
+       UTILITY
+    ═══════════════════════════════════════════════════ */
+    .row { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+    .col { display: flex; flex-direction: column; gap: .5rem; }
+    .mt { margin-top: 1.5rem; }
+    code { font-family: monospace; font-size: .85em; background: var(--sunk); padding: .1rem .4rem; border-radius: 4px; }
+    .note {
+      background: var(--sunk); border-left: 4px solid var(--blue);
+      padding: .75rem 1rem; border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      font-size: .88rem; color: var(--ink-2); margin: 1rem 0;
+    }
+    .caution {
+      background: color-mix(in srgb, var(--hot) 10%, var(--paper));
+      border-left: 4px solid var(--hot);
+      padding: .75rem 1rem; border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      font-size: .88rem; margin: 1rem 0;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; margin: 1rem 0; }
+    th { background: var(--sunk); text-align: left; padding: .6rem .9rem; font-weight: 800; border-bottom: var(--b-ink); }
+    td { padding: .55rem .9rem; border-bottom: var(--b-subtle); }
+    tr:last-child td { border-bottom: none; }
+
+    @media (max-width: 768px) {
+      .g-wrap { grid-template-columns: 1fr; }
+      .g-sidebar { display: none; }
+      .g-content { padding: 1.5rem 1rem 4rem; }
+      .persona-grid { grid-template-columns: 1fr 1fr; }
+      .swatch-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     TOP NAV
+══════════════════════════════════════ -->
+<header class="g-nav">
+  <div class="g-logo">LaptopFinder <span>AI</span> — Design System</div>
+  <ul class="g-links">
+    <li><a href="#colours">Colours</a></li>
+    <li><a href="#typography">Type</a></li>
+    <li><a href="#spacing">Spacing</a></li>
+    <li><a href="#components">Components</a></li>
+    <li><a href="#motion">Motion</a></li>
+  </ul>
+  <button class="g-toggle btn" id="themeToggle" aria-label="Toggle theme">🌙</button>
+</header>
+
+<div class="g-wrap">
+
+  <!-- ══════════════════════════════════════
+       SIDEBAR
+  ══════════════════════════════════════ -->
+  <aside class="g-sidebar">
+    <nav>
+      <div class="nav-group">Foundation</div>
+      <a href="#colours">Colours</a>
+      <a href="#typography">Typography</a>
+      <a href="#spacing">Spacing</a>
+      <a href="#borders">Borders &amp; Radii</a>
+      <a href="#elevation">Elevation</a>
+      <div class="nav-group">Components</div>
+      <a href="#buttons">Buttons</a>
+      <a href="#pills">Pills &amp; Chips</a>
+      <a href="#badges">Badges &amp; Tags</a>
+      <a href="#inputs">Inputs</a>
+      <a href="#selects">Segmented Switch</a>
+      <a href="#persona-cards">Persona Cards</a>
+      <a href="#laptop-cards">Laptop Cards</a>
+      <a href="#spec-tags">Spec Tags</a>
+      <a href="#dock">Compare Dock</a>
+      <div class="nav-group">Feedback</div>
+      <a href="#loading">Loading &amp; Skeletons</a>
+      <a href="#empty">Empty States</a>
+      <div class="nav-group">System</div>
+      <a href="#motion">Motion</a>
+      <a href="#z-index">Z-Index Stack</a>
+      <a href="#a11y">Accessibility</a>
+    </nav>
+  </aside>
+
+  <!-- ══════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════ -->
+  <main class="g-content">
+
+    <!-- §1 COLOURS -->
+    <section class="section" id="colours">
+      <h2 class="section-title">§1 <span>Colour</span> Palette</h2>
+
+      <div class="sub-title">Surfaces</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#f5eedf"></div><div class="swatch-info"><div class="swatch-name">--paper</div><div class="swatch-hex">#f5eedf · Page bg</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#fffaf0"></div><div class="swatch-info"><div class="swatch-name">--card</div><div class="swatch-hex">#fffaf0 · Elevated</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#ebe2cf"></div><div class="swatch-info"><div class="swatch-name">--sunk</div><div class="swatch-hex">#ebe2cf · Recessed</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#e0d4bb"></div><div class="swatch-info"><div class="swatch-name">--hover</div><div class="swatch-hex">#e0d4bb · Hover tint</div></div></div>
+      </div>
+
+      <div class="sub-title mt">Text</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#1d1712"></div><div class="swatch-info"><div class="swatch-name">--ink</div><div class="swatch-hex">#1d1712 · Primary text</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#5a4e40"></div><div class="swatch-info"><div class="swatch-name">--ink-2</div><div class="swatch-hex">#5a4e40 · Secondary</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#6e6150"></div><div class="swatch-info"><div class="swatch-name">--muted</div><div class="swatch-hex">#6e6150 · Captions</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:rgba(29,23,18,.16); border:1px solid #ccc"></div><div class="swatch-info"><div class="swatch-name">--line</div><div class="swatch-hex">rgba ink 16% · Dividers</div></div></div>
+      </div>
+
+      <div class="sub-title mt">Accents</div>
+      <div class="swatch-grid">
+        <div class="swatch"><div class="swatch-color" style="background:#d73a12"></div><div class="swatch-info"><div class="swatch-name">--hot</div><div class="swatch-hex">#d73a12 · Primary CTA</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#2b3fe0"></div><div class="swatch-info"><div class="swatch-name">--blue</div><div class="swatch-hex">#2b3fe0 · AI / Cobalt</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#ffbf1f"></div><div class="swatch-info"><div class="swatch-name">--sun</div><div class="swatch-hex">#ffbf1f · Ginkgo / Focus</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#0e7c6b"></div><div class="swatch-info"><div class="swatch-name">--teal</div><div class="swatch-hex">#0e7c6b · Match / Status</div></div></div>
+        <div class="swatch"><div class="swatch-color" style="background:#ffb000"></div><div class="swatch-info"><div class="swatch-name">--amazon</div><div class="swatch-hex">#ffb000 · Amazon CTA only</div></div></div>
+      </div>
+
+      <div class="note mt">🌙 Dark mode inverts surfaces and brightens accents. Toggle the theme button in the top-right to preview.</div>
+    </section>
+
+    <!-- §2 TYPOGRAPHY -->
+    <section class="section" id="typography">
+      <h2 class="section-title">§2 <span>Typography</span> Scale</h2>
+
+      <div class="type-row">
+        <div class="type-meta"><code>clamp(2.8rem,7.4vw,6rem)</code><br>weight 800 · display · ls -.04em</div>
+        <div style="font:800 clamp(2.8rem,7.4vw,6rem)/1 var(--display);letter-spacing:-.04em">Hero</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>clamp(1.8rem,3.2vw,2.7rem)</code><br>weight 800 · display · ls -.035em</div>
+        <div style="font:800 clamp(1.8rem,3.2vw,2.7rem)/1.05 var(--display);letter-spacing:-.035em">Results H1</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>1.9rem</code><br>weight 800 · display · ls -.03em</div>
+        <div style="font:800 1.9rem/1.1 var(--display);letter-spacing:-.03em">Section H2</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>2rem</code><br>weight 800 · display · ls -.03em</div>
+        <div style="font:800 2rem/1.1 var(--display);letter-spacing:-.03em">Dialog H3</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>1.95rem</code><br>weight 800 · display · tabular-nums</div>
+        <div style="font:800 1.95rem var(--display);letter-spacing:-.035em;font-variant-numeric:tabular-nums">₹79,990</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>1.3rem</code><br>weight 700 · body · ls -.02em</div>
+        <div style="font:700 1.3rem/1.2 var(--body);letter-spacing:-.02em">Card Title Example</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>1rem / 1.55</code><br>weight 400 · body</div>
+        <div style="font:400 1rem/1.55 var(--body)">Body copy. Hanken Grotesk handles all prose, descriptions, and UI text with optical clarity at every size.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>0.88rem</code><br>weight 600 · body</div>
+        <div style="font:600 .88rem/1.45 var(--body)">Small body — AI verdicts, card descriptions, secondary info.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>0.82rem</code><br>weight 700–800 · body · uppercase · ls .06em</div>
+        <div style="font:800 .82rem var(--body);text-transform:uppercase;letter-spacing:.06em">Label / Meta Tag</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta"><code>0.68–0.75rem</code><br>weight 800 · body · uppercase · ls .08em</div>
+        <div style="font:800 .7rem var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)">Micro spec key title</div>
+      </div>
+    </section>
+
+    <!-- §3 SPACING -->
+    <section class="section" id="spacing">
+      <h2 class="section-title">§3 <span>Spacing</span> Scale</h2>
+      <p style="color:var(--ink-2);margin-bottom:1.5rem">Base unit: <code>4px (0.25rem)</code>. All spacing is a multiple of this unit.</p>
+
+      <div class="spacing-row"><span class="spacing-label">--sp-1</span><div class="spacing-bar" style="width:4px"></div><span class="spacing-value">4px · 0.25rem · micro gap</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-2</span><div class="spacing-bar" style="width:8px"></div><span class="spacing-value">8px · 0.5rem · tight gap</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-3</span><div class="spacing-bar" style="width:12px"></div><span class="spacing-value">12px · 0.75rem · small pad</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-4</span><div class="spacing-bar" style="width:16px"></div><span class="spacing-value">16px · 1rem · base unit</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-5</span><div class="spacing-bar" style="width:20px"></div><span class="spacing-value">20px · 1.25rem · card internal</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-6</span><div class="spacing-bar" style="width:24px"></div><span class="spacing-value">24px · 1.5rem · section pad</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-7</span><div class="spacing-bar" style="width:32px"></div><span class="spacing-value">32px · 2rem · modal body</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-8</span><div class="spacing-bar" style="width:40px"></div><span class="spacing-value">40px · 2.5rem · studio gap</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-9</span><div class="spacing-bar" style="width:56px"></div><span class="spacing-value">56px · 3.5rem · hero padding</span></div>
+      <div class="spacing-row"><span class="spacing-label">--sp-10</span><div class="spacing-bar" style="width:80px"></div><span class="spacing-value">80px · 5rem · section breathing room</span></div>
+    </section>
+
+    <!-- §4 BORDERS & RADII -->
+    <section class="section" id="borders">
+      <h2 class="section-title">§4 <span>Borders</span> &amp; Radii</h2>
+
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Usage</th></tr>
+        <tr><td><code>--b-ink</code></td><td><code>2px solid var(--ink)</code></td><td>Primary component border — the "ink rule"</td></tr>
+        <tr><td><code>--b-soft</code></td><td><code>1.5px solid var(--ink)</code></td><td>Secondary / filter borders</td></tr>
+        <tr><td><code>--b-subtle</code></td><td><code>1px solid var(--line)</code></td><td>Table rows, spec tags, dividers</td></tr>
+      </table>
+
+      <div class="sub-title mt">Border Radius Scale</div>
+      <div class="radius-grid">
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:4px"></div><div class="radius-label">4px<br><code>--r-xs</code><br>Micro badges</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:8px"></div><div class="radius-label">8px<br><code>--r-sm</code><br>Pills, selects</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:12px"></div><div class="radius-label">12px<br><code>--r-md</code><br>Accordions, btns</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:18px"></div><div class="radius-label">18px<br><code>--r-lg</code><br>Cards</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:22px"></div><div class="radius-label">22px<br><code>--r-xl</code><br>Dialogs</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:50%;width:64px;height:64px"></div><div class="radius-label">50%<br><code>--r-circle</code><br>Avatars, toggles</div></div>
+        <div class="radius-swatch"><div class="radius-box" style="border-radius:99px;height:36px;width:120px"></div><div class="radius-label">99px<br><code>--r-pill</code><br>Chips, docks</div></div>
+      </div>
+    </section>
+
+    <!-- §5 ELEVATION -->
+    <section class="section" id="elevation">
+      <h2 class="section-title">§5 <span>Elevation</span> &amp; Depth</h2>
+      <div class="row" style="gap:2rem;align-items:flex-end">
+        <div class="col" style="align-items:center">
+          <div style="width:120px;height:80px;background:var(--paper);border:var(--b-ink);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font:700 .78rem var(--body)">Layer 0<br><code>--paper</code></div>
+        </div>
+        <div class="col" style="align-items:center">
+          <div style="width:120px;height:80px;background:var(--card);border:var(--b-ink);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font:700 .78rem var(--body);box-shadow:var(--shadow)">Layer 1<br><code>--card</code></div>
+        </div>
+        <div class="col" style="align-items:center">
+          <div style="width:120px;height:80px;background:var(--sunk);border:var(--b-ink);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font:700 .78rem var(--body)">Layer 2<br><code>--sunk</code></div>
+        </div>
+        <div class="col" style="align-items:center">
+          <div style="width:120px;height:80px;background:var(--hover);border:var(--b-ink);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font:700 .78rem var(--body)">Layer 3<br><code>--hover</code></div>
+        </div>
+      </div>
+      <div class="note mt">Shadow is used sparingly — only on elevated cards and the floating compare dock. Hover states use <code>translateY(-5px)</code>, not shadow growth.</div>
+    </section>
+
+    <!-- §6 BUTTONS -->
+    <section class="section" id="buttons">
+      <h2 class="section-title">§6 <span>Buttons</span></h2>
+
+      <div class="sub-title">Primary CTA</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn btn-primary">Default</button>
+        <button class="btn btn-primary" style="filter:brightness(1.1);transform:translateY(-2px)">Hover</button>
+        <button class="btn btn-primary" style="filter:brightness(.95)">Active</button>
+        <button class="btn btn-primary" style="outline:3px solid var(--blue);outline-offset:2px">Focus</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+      </div>
+
+      <div class="sub-title">Secondary</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn btn-secondary">Default</button>
+        <button class="btn btn-secondary" style="background:var(--ink);color:var(--paper)">Hover</button>
+        <button class="btn btn-secondary" style="outline:3px solid var(--blue);outline-offset:2px">Focus</button>
+        <button class="btn btn-secondary" disabled>Disabled</button>
+      </div>
+
+      <div class="sub-title">Ghost / Text</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn btn-ghost">Clear All</button>
+        <button class="btn btn-ghost" style="color:var(--ink)">Hover</button>
+        <button class="btn btn-ghost" disabled>Disabled</button>
+      </div>
+
+      <div class="sub-title">Amazon CTA</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn btn-amazon">🛒 Buy on Amazon</button>
+        <button class="btn btn-amazon" style="filter:brightness(1.08)">Hover</button>
+        <button class="btn btn-amazon" disabled>Disabled</button>
+      </div>
+
+      <div class="sub-title">Icon Button</div>
+      <div class="component-row">
+        <button class="btn-icon btn">🌙</button>
+        <button class="btn-icon btn" style="transform:rotate(20deg);background:var(--sun)">Hover</button>
+      </div>
+    </section>
+
+    <!-- §7 PILLS & CHIPS -->
+    <section class="section" id="pills">
+      <h2 class="section-title">§7 <span>Pills</span> &amp; Chips</h2>
+
+      <div class="sub-title">Filter Pill</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn pill-filter">Default</button>
+        <button class="btn pill-filter" style="border-color:var(--ink)">Hover</button>
+        <button class="btn pill-filter is-selected">Selected</button>
+        <button class="btn pill-filter" style="outline:3px solid var(--blue);outline-offset:2px">Focus</button>
+        <button class="btn pill-filter" disabled>Disabled</button>
+      </div>
+
+      <div class="sub-title">Dismiss Chip</div>
+      <div class="component-row">
+        <div class="state-label">All States ↓</div>
+        <button class="btn chip-dismiss">16 GB RAM <span class="x">✕</span></button>
+        <button class="btn chip-dismiss" style="background:var(--hot);color:var(--on-hot);border-color:var(--hot)">Hover <span class="x">✕</span></button>
+      </div>
+
+      <div class="sub-title">Prompt Chip</div>
+      <div class="component-row">
+        <button class="btn chip-prompt">Gaming laptop under ₹80k</button>
+        <button class="btn chip-prompt" style="background:var(--ink);color:var(--paper)">Hover</button>
+      </div>
+    </section>
+
+    <!-- §8 BADGES & TAGS -->
+    <section class="section" id="badges">
+      <h2 class="section-title">§8 <span>Badges</span> &amp; Tags</h2>
+
+      <div class="component-row" style="flex-wrap:wrap">
+        <span class="tag-badge is-ai">AI · Recommended</span>
+        <span class="tag-badge is-alt">Local · Fallback</span>
+        <span class="tag-badge is-live">Live · API</span>
+        <span class="tag-badge is-hot">Popular</span>
+        <span style="display:inline-block;font:800 .68rem var(--body);text-transform:uppercase;letter-spacing:.06em;background:var(--sunk);padding:.2rem .7rem;border-radius:99px;border:1.5px solid var(--ink)">AI Badge</span>
+      </div>
+
+      <div class="sub-title mt">Match Score Bubble</div>
+      <div class="row" style="gap:2rem">
+        <div class="match-bubble" style="border-color:var(--teal)"><span class="match-num" style="color:var(--teal)">96</span><span class="match-unit">match</span></div>
+        <div class="match-bubble" style="border-color:var(--blue)"><span class="match-num" style="color:var(--blue)">78</span><span class="match-unit">match</span></div>
+        <div class="match-bubble" style="border-color:var(--sun)"><span class="match-num" style="color:#b88a00">62</span><span class="match-unit">match</span></div>
+        <div class="match-bubble"><span class="match-num" style="color:var(--muted)">44</span><span class="match-unit">match</span></div>
+      </div>
+      <div class="note mt">Score colour: 90–99% → teal, 70–89% → blue, 50–69% → sun (dark text), &lt;50% → muted</div>
+    </section>
+
+    <!-- §9 INPUTS -->
+    <section class="section" id="inputs">
+      <h2 class="section-title">§9 <span>Inputs</span> &amp; Forms</h2>
+
+      <div class="sub-title">Search Input (container focus-halo)</div>
+      <div class="component-row" style="flex-direction:column;align-items:stretch">
+        <div class="input-wrap" style="max-width:500px">
+          <input type="text" placeholder="Describe what you need (e.g. Gaming laptop under ₹80k)…" />
+          <button class="btn btn-primary" style="padding:.6rem 1rem;font-size:.85rem">Search</button>
+        </div>
+        <div style="font:.78rem var(--body);color:var(--muted)">↑ Click inside to see sun focus halo</div>
+      </div>
+
+      <div class="sub-title">Field States</div>
+      <div class="component-row" style="flex-direction:column;align-items:stretch;gap:1.25rem;max-width:400px">
+        <div class="field-group">
+          <label class="field-label">Default</label>
+          <input class="field-input" type="text" placeholder="Enter value…" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Valid ✓</label>
+          <input class="field-input is-valid" type="text" value="Core i7" />
+          <span class="field-success">✓ Processor matched successfully</span>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Error ✕</label>
+          <input class="field-input is-invalid" type="text" value="xyz123" />
+          <span class="field-error">✕ Invalid value — please select from the list</span>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Hint</label>
+          <input class="field-input" type="text" placeholder="e.g. 16 GB" />
+          <span class="field-hint">Choose RAM that matches your workload. 16 GB recommended for coding.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- §10 SEGMENTED SWITCH -->
+    <section class="section" id="selects">
+      <h2 class="section-title">§10 <span>Segmented</span> Switch</h2>
+      <div class="component-row">
+        <div class="seg-switch" role="group">
+          <button class="seg-btn is-active btn" onclick="segClick(this)">Windows</button>
+          <button class="seg-btn btn" onclick="segClick(this)">macOS</button>
+          <button class="seg-btn btn" onclick="segClick(this)">Linux</button>
+        </div>
+        <div class="seg-switch" role="group" style="margin-left:2rem">
+          <button class="seg-btn btn" onclick="segClick(this)">Price ↑</button>
+          <button class="seg-btn is-active btn" onclick="segClick(this)">Match %</button>
+          <button class="seg-btn btn" onclick="segClick(this)">Price ↓</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- §11 PERSONA CARDS -->
+    <section class="section" id="persona-cards">
+      <h2 class="section-title">§11 <span>Persona</span> Cards</h2>
+      <div class="persona-grid">
+        <div class="persona-card is-student">
+          <span class="persona-badge">Popular for College</span>
+          <div class="persona-title">B.Tech &amp; CS Student</div>
+          <div class="persona-desc">Multitasking, Docker, IDEs &amp; decent battery.</div>
+        </div>
+        <div class="persona-card is-gaming is-active">
+          <span class="persona-badge">High FPS Gaming</span>
+          <div class="persona-title">AAA Gaming Beast</div>
+          <div class="persona-desc">RTX GPU, high refresh &amp; thermal headroom.</div>
+        </div>
+        <div class="persona-card is-macbook">
+          <span class="persona-badge">Silent &amp; Efficient</span>
+          <div class="persona-title">Developer MacBook</div>
+          <div class="persona-desc">All-day battery, Unix terminal, Apple Silicon.</div>
+        </div>
+        <div class="persona-card is-creator">
+          <span class="persona-badge">Studio Creative</span>
+          <div class="persona-title">4K Creator &amp; 3D Rig</div>
+          <div class="persona-desc">32GB RAM &amp; GPU rendering for Premiere/Blender.</div>
+        </div>
+      </div>
+      <div class="note mt">The <code>.is-active</code> persona (Gaming, above) shows the <code>outline: 4px solid var(--ink)</code> selection indicator.</div>
+    </section>
+
+    <!-- §12 LAPTOP CARDS -->
+    <section class="section" id="laptop-cards">
+      <h2 class="section-title">§12 <span>Laptop</span> Cards</h2>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem">
+        <div class="laptop-card">
+          <div class="laptop-card-img" style="background:var(--sun)">
+            <div class="laptop-card-img-inner">💻</div>
+          </div>
+          <div class="laptop-card-body">
+            <div class="laptop-brand">Lenovo</div>
+            <div class="laptop-title">LOQ 15 i7 13th Gen</div>
+            <div class="laptop-price">₹79,990</div>
+            <div class="laptop-actions">
+              <button class="btn-card btn">Quick View</button>
+              <button class="btn-card btn is-active">Compare ✓</button>
+              <button class="btn-card-buy btn">🛒 Amazon</button>
+            </div>
+          </div>
+        </div>
+        <div class="laptop-card">
+          <div class="laptop-card-img" style="background:var(--hot)">
+            <div class="laptop-card-img-inner" style="color:rgba(255,255,255,.3)">💻</div>
+          </div>
+          <div class="laptop-card-body">
+            <div class="laptop-brand">ASUS</div>
+            <div class="laptop-title">TUF Gaming A16 Advantage</div>
+            <div class="laptop-price">₹89,990</div>
+            <div class="laptop-actions">
+              <button class="btn-card btn">Quick View</button>
+              <button class="btn-card btn">+ Compare</button>
+              <button class="btn-card-buy btn">🛒 Amazon</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note mt">Hover any card to see the <code>translateY(-5px)</code> lift and inner image <code>scale(1.06)</code>.</div>
+    </section>
+
+    <!-- §13 SPEC TAGS -->
+    <section class="section" id="spec-tags">
+      <h2 class="section-title">§13 <span>Spec</span> Tags</h2>
+      <div style="max-width:360px">
+        <div class="spec-grid">
+          <div class="spec-tag"><span class="spec-key">Processor</span><span class="spec-val">Core i7 13th Gen</span></div>
+          <div class="spec-tag"><span class="spec-key">GPU</span><span class="spec-val">RTX 4060</span></div>
+          <div class="spec-tag"><span class="spec-key">RAM</span><span class="spec-val">16 GB DDR5</span></div>
+          <div class="spec-tag"><span class="spec-key">Storage</span><span class="spec-val">512 GB NVMe SSD</span></div>
+          <div class="spec-tag" style="grid-column:1/-1"><span class="spec-key">Display</span><span class="spec-val">15.6" FHD IPS 144 Hz</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §14 COMPARE DOCK -->
+    <section class="section" id="dock">
+      <h2 class="section-title">§14 <span>Compare</span> Dock</h2>
+      <div class="component-row" style="justify-content:center">
+        <div class="dock-preview">
+          <div style="display:flex;gap:.45rem">
+            <div class="dock-avatar">💻</div>
+            <div class="dock-avatar">🍏</div>
+          </div>
+          <div>
+            <div style="font:700 .88rem var(--body)">Comparing</div>
+            <div style="font:.74rem var(--body);color:#cdbfa8">2 of 3 slots used</div>
+          </div>
+          <button class="btn" style="background:rgba(255,255,255,.12);color:#f6efe2;border:none;border-radius:99px;padding:.4rem .8rem;font-size:.8rem;font-weight:600">Clear</button>
+          <button class="btn dock-btn-compare">⚖ Compare Now</button>
+        </div>
+      </div>
+      <div class="note mt">The dock always floats at <code>z-index: 850</code>, slides up from <code>translateY(90px)</code>, and uses a sun-coloured border on a near-black background — the inverse of the page.</div>
+    </section>
+
+    <!-- §15 LOADING -->
+    <section class="section" id="loading">
+      <h2 class="section-title">§15 <span>Loading</span> &amp; Skeletons</h2>
+
+      <div class="sub-title">Spinner Sizes</div>
+      <div class="component-row" style="align-items:center;gap:2rem">
+        <div class="col" style="align-items:center;gap:.5rem">
+          <div class="spinner sm" style="color:var(--hot)"></div>
+          <div class="rule-label">sm · 14px</div>
+        </div>
+        <div class="col" style="align-items:center;gap:.5rem">
+          <div class="spinner md" style="color:var(--hot)"></div>
+          <div class="rule-label">md · 28px</div>
+        </div>
+        <div class="col" style="align-items:center;gap:.5rem">
+          <div class="spinner lg" style="color:var(--hot)"></div>
+          <div class="rule-label">lg · 48px</div>
+        </div>
+      </div>
+
+      <div class="sub-title mt">Skeleton Shimmer</div>
+      <div style="max-width:360px;padding:1.3rem;background:var(--card);border:var(--b-ink);border-radius:var(--r-lg)">
+        <div class="skeleton skel-box"></div>
+        <div style="padding:.75rem 0">
+          <div class="skeleton skel-line" style="width:40%"></div>
+          <div class="skeleton skel-title"></div>
+          <div class="skeleton skel-line" style="width:30%"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- §16 EMPTY STATE -->
+    <section class="section" id="empty">
+      <h2 class="section-title">§16 <span>Empty</span> States</h2>
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No Matches Found</div>
+        <p class="empty-desc">Your filters are too specific. Try loosening the budget or removing the GPU requirement to find great alternatives.</p>
+        <button class="btn btn-primary">Reset All Filters</button>
+      </div>
+      <div class="note mt">Empty state uses a <code>dashed</code> border instead of solid — a visual cue that the area is "waiting to be filled". Headline tone is always helpful, never blaming.</div>
+    </section>
+
+    <!-- §17 MOTION -->
+    <section class="section" id="motion">
+      <h2 class="section-title">§17 <span>Motion</span> &amp; Animation</h2>
+
+      <div class="sub-title">Hover Demos (hover each box)</div>
+      <div class="motion-box">
+        <div class="motion-demo">
+          <div class="motion-trigger">Card Lift<br><code>translateY(-5px)</code></div>
+          <div class="motion-label">Default card hover</div>
+        </div>
+        <div class="motion-demo">
+          <div class="motion-trigger scale">Image Zoom<br><code>scale(1.06)</code></div>
+          <div class="motion-label">Card image hover</div>
+        </div>
+        <div class="motion-demo">
+          <div class="motion-trigger rotate">Icon Rotate<br><code>rotate(20deg)</code></div>
+          <div class="motion-label">Theme toggle</div>
+        </div>
+        <div class="motion-demo">
+          <div class="motion-trigger brightness">Brightness<br><code>brightness(1.1)</code></div>
+          <div class="motion-label">Primary CTA</div>
+        </div>
+      </div>
+
+      <div class="sub-title mt">Timing Tokens</div>
+      <table>
+        <tr><th>Token</th><th>Value</th><th>Use For</th></tr>
+        <tr><td><code>--t-fast</code></td><td><code>0.15s ease</code></td><td>Colour swaps, filter changes</td></tr>
+        <tr><td><code>--t-mid</code></td><td><code>0.25s var(--ease)</code></td><td>Rotations, theme toggle, BG</td></tr>
+        <tr><td><code>--t-slow</code></td><td><code>0.3s var(--ease)</code></td><td>Card transforms, image scale</td></tr>
+        <tr><td><code>--ease</code></td><td><code>cubic-bezier(.16,1,.3,1)</code></td><td>Spring easing for all transforms</td></tr>
+      </table>
+      <div class="caution">⚠️ All animations must be wrapped in a <code>@media (prefers-reduced-motion: reduce)</code> override that sets them to <code>none !important</code>. This is non-negotiable.</div>
+    </section>
+
+    <!-- §18 Z-INDEX -->
+    <section class="section" id="z-index">
+      <h2 class="section-title">§18 <span>Z-Index</span> Stack</h2>
+      <div class="stack-diagram">
+        <div class="stack-layer" style="background:var(--paper)"><span class="z-val">0</span>Page content</div>
+        <div class="stack-layer" style="background:var(--sunk)"><span class="z-val">2</span>Card badges / floating elements</div>
+        <div class="stack-layer" style="background:color-mix(in srgb,var(--teal) 15%,var(--card))"><span class="z-val">850</span>Floating compare dock</div>
+        <div class="stack-layer" style="background:color-mix(in srgb,var(--blue) 15%,var(--card))"><span class="z-val">900</span>Sticky navbar</div>
+        <div class="stack-layer" style="background:color-mix(in srgb,var(--hot) 15%,var(--card))"><span class="z-val">1000</span>Modal overlay + dialog</div>
+      </div>
+      <div class="note mt">Never assign a z-index above 1000 without documenting it here. The dialog close button uses a local <code>z-index: 10</code> within the stacking context of its modal.</div>
+    </section>
+
+    <!-- §19 ACCESSIBILITY -->
+    <section class="section" id="a11y">
+      <h2 class="section-title">§19 <span>Accessibility</span> Rules</h2>
+      <table>
+        <tr><th>Rule</th><th>Standard</th><th>Implementation</th></tr>
+        <tr><td>Focus visible on all interactive elements</td><td>WCAG 2.4.7</td><td><code>:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px }</code></td></tr>
+        <tr><td>Colour is never the sole state indicator</td><td>WCAG 1.4.1</td><td>Always pair colour change with text/icon change</td></tr>
+        <tr><td>Decorative emoji hidden from AT</td><td>WCAG 1.1.1</td><td><code>display: none</code> on all icon-emoji wrappers</td></tr>
+        <tr><td>Icon-only buttons have aria-label</td><td>WCAG 4.1.2</td><td><code>aria-label="Toggle Theme"</code> on theme-toggle-btn</td></tr>
+        <tr><td>prefers-reduced-motion respected</td><td>WCAG 2.3.3</td><td><code>animation/transition: none !important</code></td></tr>
+        <tr><td>Body text contrast on --paper</td><td>WCAG 1.4.3</td><td>#1d1712 on #f5eedf → ≥ 12:1 ✅</td></tr>
+        <tr><td>--sun NOT used as text colour</td><td>WCAG 1.4.3</td><td>#ffbf1f fails 4.5:1 on white — highlight/badge only</td></tr>
+        <tr><td>Scroll padding clears sticky nav</td><td>WCAG 2.4.12</td><td><code>scroll-padding-top: 5rem</code></td></tr>
+        <tr><td>Segmented switches use role="group"</td><td>WCAG 4.1.2</td><td><code>role="group"</code> on container</td></tr>
+        <tr><td>Text selection visible</td><td>WCAG 1.4.3</td><td><code>::selection { background: var(--sun); color: #1d1712 }</code></td></tr>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Theme toggle
+  const toggleBtn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  toggleBtn.addEventListener('click', () => {
+    const isDark = root.getAttribute('data-theme') === 'dark';
+    root.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    toggleBtn.textContent = isDark ? '🌙' : '☀️';
+  });
+
+  // Segmented switch
+  function segClick(el) {
+    const group = el.closest('.seg-switch');
+    group.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('is-active'));
+    el.classList.add('is-active');
+  }
+</script>
+
+</body>
+</html>
+

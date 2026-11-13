@@ -1,0 +1,1011 @@
+/* ==========================================================================
+   LAPTOPFINDER AI — Component Library
+   Every interactive component documented with all five states:
+     1. Default
+     2. Hover
+     3. Active / selected
+     4. Focus-visible
+     5. Disabled / .is-disabled
+
+   All values use CSS custom properties from tokens.css — no raw hex.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. BUTTONS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .btn-primary — Primary CTA
+   Hot-coloured background, ink border, on-hot text.
+   -------------------------------------------------------------------------- */
+.btn-primary {
+  /* Default */
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-2);
+  padding:         var(--space-5) var(--space-7);
+  background:      var(--hot);
+  color:           var(--on-hot);
+  border:          var(--border-ink);
+  border-radius:   var(--radius-md);
+  font-family:     var(--body);
+  font-size:       0.9rem;
+  font-weight:     800;
+  box-shadow:      var(--shadow);
+  transition:      filter var(--transition-fast),
+                   transform var(--transition-mid);
+  cursor:          pointer;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  /* Hover — slightly brighter */
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.btn-primary.is-active,
+.btn-primary:active {
+  /* Active — pressed in */
+  filter: brightness(0.92);
+  transform: translateY(0);
+}
+
+.btn-primary:focus-visible {
+  /* Focus — high-contrast ring */
+  outline:        3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.btn-primary:disabled,
+.btn-primary.is-disabled {
+  /* Disabled */
+  opacity:        0.5;
+  cursor:         not-allowed;
+  pointer-events: none;
+  filter:         none;
+  transform:      none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .btn-secondary — Secondary action
+   Transparent background, ink border. Inverts on hover.
+   -------------------------------------------------------------------------- */
+.btn-secondary {
+  /* Default */
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-2);
+  padding:         var(--space-5) var(--space-7);
+  background:      transparent;
+  color:           var(--ink);
+  border:          var(--border-soft);
+  border-radius:   var(--radius-md);
+  font-family:     var(--body);
+  font-size:       0.9rem;
+  font-weight:     700;
+  transition:      background var(--transition-fast),
+                   color      var(--transition-fast);
+  cursor:          pointer;
+  text-decoration: none;
+}
+
+.btn-secondary:hover {
+  /* Hover — ink fill */
+  background: var(--ink);
+  color:      var(--paper);
+}
+
+.btn-secondary.is-active,
+.btn-secondary:active {
+  /* Active */
+  background: var(--ink);
+  color:      var(--paper);
+  opacity:    0.85;
+}
+
+.btn-secondary:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.btn-secondary:disabled,
+.btn-secondary.is-disabled {
+  /* Disabled */
+  opacity:        0.45;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .btn-ghost — Ghost / text-only action
+   No border, no background. Used for clear / reset actions.
+   -------------------------------------------------------------------------- */
+.btn-ghost {
+  /* Default */
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-2);
+  padding:         var(--space-3) var(--space-4);
+  background:      transparent;
+  color:           var(--hot);
+  border:          none;
+  border-radius:   var(--radius-sm);
+  font-family:     var(--body);
+  font-size:       0.85rem;
+  font-weight:     700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition:      color var(--transition-fast),
+                   background var(--transition-fast);
+  cursor:          pointer;
+}
+
+.btn-ghost:hover {
+  /* Hover — faint tinted background */
+  background: var(--hover);
+  color:      var(--ink);
+}
+
+.btn-ghost.is-active,
+.btn-ghost:active {
+  /* Active */
+  color:      var(--ink);
+  background: var(--sunk);
+}
+
+.btn-ghost:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.btn-ghost:disabled,
+.btn-ghost.is-disabled {
+  /* Disabled */
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .btn-amazon — Amazon CTA
+   Amazon amber background, dark ink text. Maps to the buy button.
+   -------------------------------------------------------------------------- */
+.btn-amazon {
+  /* Default */
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  gap:             var(--space-2);
+  padding:         var(--space-4) var(--space-7);
+  background:      var(--amazon);
+  color:           var(--ink);
+  border:          none;
+  border-radius:   var(--radius-sm);
+  font-family:     var(--body);
+  font-size:       0.85rem;
+  font-weight:     800;
+  text-decoration: none;
+  transition:      filter var(--transition-fast);
+  cursor:          pointer;
+}
+
+.btn-amazon:hover {
+  /* Hover */
+  filter: brightness(1.08);
+}
+
+.btn-amazon.is-active,
+.btn-amazon:active {
+  /* Active */
+  filter: brightness(0.93);
+}
+
+.btn-amazon:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.btn-amazon:disabled,
+.btn-amazon.is-disabled {
+  /* Disabled */
+  opacity:        0.5;
+  cursor:         not-allowed;
+  pointer-events: none;
+  filter:         none;
+}
+
+
+/* ==========================================================================
+   2. FILTER PILLS & CHIPS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .pill-filter — Filter selection pill
+   Used in pill-group grids for single/multi-select filtering.
+   -------------------------------------------------------------------------- */
+.pill-filter {
+  /* Default */
+  display:         inline-flex;
+  align-items:     center;
+  justify-content: center;
+  padding:         var(--space-3) var(--space-5);
+  background:      transparent;
+  color:           var(--ink);
+  border:          var(--border-subtle);
+  border-radius:   var(--radius-sm);
+  font-family:     var(--body);
+  font-size:       0.88rem;
+  font-weight:     600;
+  transition:      border-color var(--transition-fast),
+                   background   var(--transition-fast),
+                   color        var(--transition-fast);
+  cursor:          pointer;
+  user-select:     none;
+}
+
+.pill-filter:hover {
+  /* Hover */
+  border-color: var(--ink);
+}
+
+.pill-filter.selected,
+.pill-filter.is-active,
+.pill-filter:active {
+  /* Active / selected */
+  background:   var(--ink);
+  color:        var(--paper);
+  border-color: var(--ink);
+}
+
+.pill-filter:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.pill-filter:disabled,
+.pill-filter.is-disabled {
+  /* Disabled */
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .chip-dismiss — Dismissable filter chip
+   Displays an × to remove an active filter.
+   -------------------------------------------------------------------------- */
+.chip-dismiss {
+  /* Default */
+  display:      inline-flex;
+  align-items:  center;
+  gap:          var(--space-2);
+  padding:      var(--space-2) var(--space-4);
+  background:   var(--card);
+  color:        var(--ink);
+  border:       var(--border-soft);
+  border-radius: var(--radius-pill);
+  font-size:    0.78rem;
+  font-weight:  600;
+  cursor:       pointer;
+  transition:   background   var(--transition-fast),
+                color        var(--transition-fast),
+                border-color var(--transition-fast);
+  user-select:  none;
+}
+
+/* × icon (provided via pseudo-element or child span.chip-x) */
+.chip-dismiss::after {
+  content:     "×";
+  font-size:   0.9rem;
+  font-weight: 400;
+  opacity:     0.6;
+}
+
+.chip-dismiss:hover {
+  /* Hover — destructive hint */
+  background:   var(--hot);
+  color:        var(--on-hot);
+  border-color: var(--hot);
+}
+
+.chip-dismiss:hover::after {
+  opacity: 1;
+}
+
+.chip-dismiss.is-active,
+.chip-dismiss:active {
+  /* Active */
+  filter: brightness(0.9);
+}
+
+.chip-dismiss:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.chip-dismiss.is-disabled,
+.chip-dismiss:disabled {
+  /* Disabled */
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .chip-prompt — Prompt suggestion chip
+   Surfaced below the hero search bar as quick-start query hints.
+   -------------------------------------------------------------------------- */
+.chip-prompt {
+  /* Default */
+  display:       inline-flex;
+  align-items:   center;
+  gap:           var(--space-2);
+  padding:       var(--space-2) var(--space-5);
+  background:    transparent;
+  color:         var(--ink);
+  border:        var(--border-soft);
+  border-radius: var(--radius-pill);
+  font-size:     0.85rem;
+  font-weight:   600;
+  cursor:        pointer;
+  transition:    background var(--transition-fast),
+                 color      var(--transition-fast);
+  user-select:   none;
+}
+
+.chip-prompt:hover {
+  /* Hover — ink fill */
+  background: var(--ink);
+  color:      var(--paper);
+}
+
+.chip-prompt.is-active,
+.chip-prompt:active {
+  /* Active */
+  background: var(--ink);
+  color:      var(--paper);
+  opacity:    0.85;
+}
+
+.chip-prompt:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.chip-prompt.is-disabled,
+.chip-prompt:disabled {
+  /* Disabled */
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   3. BADGES & TAGS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .tag-badge — Status badge
+   Variants: .is-ai (blue), .is-alt (sun/gold), .is-live (teal)
+   -------------------------------------------------------------------------- */
+.tag-badge {
+  /* Default / base */
+  display:        inline-block;
+  padding:        0.2rem 0.7rem;
+  border-radius:  var(--radius-pill);
+  font-size:      0.72rem;
+  font-weight:    800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height:    1;
+  /* Fallback colours (overridden by variant modifiers below) */
+  background:     var(--sunk);
+  color:          var(--ink);
+  transition:     opacity var(--transition-fast);
+}
+
+/* Variant: AI engine */
+.tag-badge.is-ai {
+  background: var(--blue);
+  color:      var(--on-blue);
+}
+
+/* Variant: alternative / fallback */
+.tag-badge.is-alt {
+  background: var(--sun);
+  color:      var(--ink); /* sun is light, ink is readable */
+}
+
+/* Variant: live / active */
+.tag-badge.is-live {
+  background: var(--teal);
+  color:      var(--on-teal);
+}
+
+/* Hover — subtle pulse */
+.tag-badge:hover {
+  opacity: 0.85;
+}
+
+/* Focus (when badge is interactive / button-role) */
+.tag-badge:focus-visible {
+  outline:        3px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* Disabled */
+.tag-badge.is-disabled {
+  opacity: 0.4;
+  cursor:  not-allowed;
+}
+
+
+/* ==========================================================================
+   4. CARDS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .card-laptop — Laptop product card wrapper
+   Contains image band, content, and action row.
+   -------------------------------------------------------------------------- */
+.card-laptop {
+  /* Default */
+  display:        flex;
+  flex-direction: column;
+  background:     var(--card);
+  border:         var(--border-ink);
+  border-radius:  var(--radius-lg);
+  overflow:       hidden;
+  transition:     transform    var(--transition-slow),
+                  box-shadow   var(--transition-slow);
+}
+
+.card-laptop:hover {
+  /* Hover — lifts off the page */
+  transform:  translateY(-5px);
+  box-shadow: var(--shadow);
+}
+
+.card-laptop.is-active,
+.card-laptop.is-selected {
+  /* Active / selected — prominent ring */
+  outline:        4px solid var(--blue);
+  outline-offset: 2px;
+  transform:      translateY(-3px);
+  box-shadow:     var(--shadow);
+}
+
+.card-laptop:focus-visible {
+  /* Focus (card is focusable) */
+  outline:        3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.card-laptop.is-disabled {
+  /* Disabled */
+  opacity:        0.5;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .card-persona — Persona selection card
+   Each variant assigns --c (bg) and --on (text) via its modifier class.
+   Variants: .is-student, .is-gaming, .is-macbook, .is-creator
+   -------------------------------------------------------------------------- */
+.card-persona {
+  /* Default base */
+  display:        flex;
+  flex-direction: column;
+  min-height:     240px;
+  padding:        var(--space-7);
+  background:     var(--c, var(--sunk));
+  color:          var(--on, var(--ink));
+  border:         var(--border-ink);
+  border-radius:  var(--radius-lg);
+  transition:     transform var(--transition-mid);
+  cursor:         pointer;
+  user-select:    none;
+}
+
+/* Variant colour mappings */
+.card-persona.is-student  { --c: var(--sun);  --on: var(--ink);     }
+.card-persona.is-gaming   { --c: var(--hot);  --on: var(--on-hot);  }
+.card-persona.is-macbook  { --c: var(--blue); --on: var(--on-blue); }
+.card-persona.is-creator  { --c: var(--teal); --on: var(--on-teal); }
+
+.card-persona:hover {
+  /* Hover — lift */
+  transform: translateY(-5px);
+}
+
+.card-persona.is-active,
+.card-persona.persona-active {
+  /* Active / selected — ink outline ring */
+  outline:        4px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.card-persona:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+.card-persona.is-disabled {
+  /* Disabled */
+  opacity:        0.45;
+  pointer-events: none;
+  cursor:         not-allowed;
+}
+
+
+/* ==========================================================================
+   5. INPUTS
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .input-search — Search / text input (with wrapper focus state)
+   Wrap the <input> in a div with class .input-search-wrap.
+   -------------------------------------------------------------------------- */
+.input-search-wrap {
+  /* Default wrapper */
+  display:        flex;
+  align-items:    center;
+  gap:            var(--space-3);
+  padding:        var(--space-3) var(--space-5);
+  background:     var(--card);
+  border:         var(--border-ink);
+  border-radius:  var(--radius-md);
+  box-shadow:     var(--shadow);
+  transition:     box-shadow var(--transition-fast);
+}
+
+.input-search-wrap:focus-within {
+  /* Focus-within — golden ring on the wrapper */
+  box-shadow: 0 0 0 4px var(--sun), var(--shadow);
+}
+
+.input-search {
+  /* Default input */
+  flex:        1;
+  min-width:   0;
+  background:  transparent;
+  border:      none;
+  outline:     none;
+  font-family: var(--body);
+  font-size:   1.05rem;
+  color:       var(--ink);
+  caret-color: var(--hot);
+  padding:     var(--space-3) 0;
+  transition:  color var(--transition-fast);
+}
+
+.input-search::placeholder {
+  color: var(--muted);
+}
+
+/* Hover on the wrapper */
+.input-search-wrap:hover {
+  background: var(--hover);
+}
+
+/* Focused input (the wrapper :focus-within handles the ring) */
+.input-search:focus {
+  outline: none;
+}
+
+/* Disabled */
+.input-search:disabled,
+.input-search.is-disabled {
+  opacity:        0.5;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+.input-search-wrap:has(.input-search:disabled) {
+  opacity:        0.5;
+  pointer-events: none;
+}
+
+
+/* --------------------------------------------------------------------------
+   .select-filter — Native <select> filter control
+   -------------------------------------------------------------------------- */
+.select-filter {
+  /* Default */
+  appearance:    none;
+  -webkit-appearance: none;
+  display:       block;
+  width:         100%;
+  padding:       var(--space-3) var(--space-4);
+  background:    var(--paper)
+                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231d1712' stroke-width='1.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+                 no-repeat right var(--space-4) center;
+  color:         var(--ink);
+  border:        var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-family:   var(--body);
+  font-size:     0.88rem;
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    border-color var(--transition-fast),
+                 background   var(--transition-fast);
+}
+
+.select-filter:hover {
+  /* Hover */
+  border-color: var(--ink);
+  background-color: var(--hover);
+}
+
+/* Active / open state (approximated via :active) */
+.select-filter:active {
+  border-color: var(--blue);
+}
+
+.select-filter:focus-visible,
+.select-filter:focus {
+  /* Focus */
+  outline:        none;
+  border-color:   var(--blue);
+  box-shadow:     0 0 0 3px color-mix(in srgb, var(--blue) 25%, transparent);
+}
+
+.select-filter:disabled,
+.select-filter.is-disabled {
+  /* Disabled */
+  opacity:        0.45;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   6. SEGMENTED BUTTON GROUP
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .switch-segmented — Segmented button toggle group
+   Each child button carries class .seg-btn; active button gets .is-active.
+   -------------------------------------------------------------------------- */
+.switch-segmented {
+  /* Default wrapper */
+  display:       flex;
+  border:        var(--border-ink);
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+}
+
+.switch-segmented .seg-btn {
+  /* Default segment */
+  flex:        1;
+  background:  transparent;
+  color:       var(--ink);
+  border:      none;
+  padding:     var(--space-3) var(--space-4);
+  font-family: var(--body);
+  font-size:   0.84rem;
+  font-weight: 700;
+  cursor:      pointer;
+  transition:  background var(--transition-fast),
+               color      var(--transition-fast);
+}
+
+/* Divider between segments */
+.switch-segmented .seg-btn + .seg-btn {
+  border-left: var(--border-ink);
+}
+
+.switch-segmented .seg-btn:hover {
+  /* Hover */
+  background: var(--hover);
+}
+
+.switch-segmented .seg-btn.is-active,
+.switch-segmented .seg-btn.active,
+.switch-segmented .seg-btn[aria-pressed="true"] {
+  /* Active / selected */
+  background: var(--ink);
+  color:      var(--paper);
+}
+
+.switch-segmented .seg-btn:focus-visible {
+  /* Focus — inset ring so it stays inside the border-radius clip */
+  outline:        3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+.switch-segmented .seg-btn:disabled,
+.switch-segmented .seg-btn.is-disabled {
+  /* Disabled */
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   7. ACCORDION FILTER
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .accordion-filter — Collapsible filter section
+   Add .is-open to the root element when expanded.
+   -------------------------------------------------------------------------- */
+.accordion-filter {
+  /* Default (closed) */
+  border:        var(--border-soft);
+  border-radius: var(--radius-md);
+  overflow:      hidden;
+}
+
+.accordion-filter__toggle {
+  /* Toggle button */
+  display:         flex;
+  align-items:     center;
+  justify-content: space-between;
+  width:           100%;
+  padding:         var(--space-5) var(--space-6);
+  background:      transparent;
+  border:          none;
+  font-family:     var(--body);
+  font-size:       0.9rem;
+  font-weight:     700;
+  color:           var(--ink);
+  cursor:          pointer;
+  transition:      background var(--transition-fast);
+}
+
+.accordion-filter__toggle:hover {
+  /* Hover */
+  background: var(--hover);
+}
+
+/* Arrow icon inside the toggle */
+.accordion-filter__arrow {
+  display:    inline-block;
+  transition: transform var(--transition-mid);
+}
+
+/* Open state — arrow rotates 180° */
+.accordion-filter.is-open .accordion-filter__arrow {
+  transform: rotate(180deg);
+}
+
+/* Active (toggle button press) */
+.accordion-filter__toggle:active {
+  background: var(--sunk);
+}
+
+.accordion-filter__toggle:focus-visible {
+  /* Focus */
+  outline:        3px solid var(--blue);
+  outline-offset: -3px;
+}
+
+/* Disabled accordion */
+.accordion-filter.is-disabled .accordion-filter__toggle {
+  opacity:        0.4;
+  cursor:         not-allowed;
+  pointer-events: none;
+}
+
+.accordion-filter__content {
+  /* Content panel (hidden by default via max-height; JS toggles .is-open) */
+  display:    flex;
+  flex-direction: column;
+  gap:        var(--space-4);
+  padding:    var(--space-5) var(--space-6);
+  border-top: var(--border-subtle);
+  /* Closed state */
+  max-height: 0;
+  overflow:   hidden;
+  padding-top:    0;
+  padding-bottom: 0;
+  transition: max-height var(--transition-mid),
+              padding    var(--transition-mid);
+}
+
+.accordion-filter.is-open .accordion-filter__content {
+  /* Open state — reveal content */
+  max-height:     600px; /* large enough for any content */
+  padding-top:    var(--space-5);
+  padding-bottom: var(--space-5);
+}
+
+
+/* ==========================================================================
+   8. COMPARE DOCK
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .dock-compare — Floating compare dock (fixed, bottom-center)
+   Shows when ≥ 2 laptops are queued for comparison.
+   -------------------------------------------------------------------------- */
+.dock-compare {
+  /* Default */
+  position:  fixed;
+  bottom:    var(--space-7);
+  left:      50%;
+  transform: translateX(-50%);
+  z-index:   var(--z-dock);
+  animation: dock-rise 0.4s var(--ease) both;
+}
+
+@keyframes dock-rise {
+  from {
+    transform: translate(-50%, 90px);
+    opacity:   0;
+  }
+}
+
+.dock-compare__inner {
+  /* Inner layout row */
+  display:       flex;
+  align-items:   center;
+  gap:           var(--space-7);
+  background:    var(--ink);
+  color:         var(--paper);
+  border:        2px solid var(--sun);
+  border-radius: var(--radius-pill);
+  padding:       var(--space-3) var(--space-7);
+  box-shadow:    0 18px 36px -12px rgba(0, 0, 0, 0.55);
+  transition:    box-shadow var(--transition-fast);
+}
+
+.dock-compare__inner:hover {
+  /* Hover on dock (subtle lift) */
+  box-shadow: 0 22px 42px -12px rgba(0, 0, 0, 0.65);
+}
+
+/* Active state (compare triggered) */
+.dock-compare.is-active .dock-compare__inner {
+  border-color: var(--hot);
+}
+
+/* Focus-visible on dock (when keyboard navigated) */
+.dock-compare:focus-visible {
+  outline:        3px solid var(--blue);
+  outline-offset: 4px;
+}
+
+/* Disabled / empty dock */
+.dock-compare.is-disabled {
+  opacity:        0.4;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   9. MODAL OVERLAY
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .modal-overlay — Full-screen modal backdrop + content wrapper
+   Render over everything; content sits in .modal-overlay__dialog.
+   -------------------------------------------------------------------------- */
+.modal-overlay {
+  /* Default (visible) */
+  position:    fixed;
+  inset:       0;
+  z-index:     var(--z-modal);
+  display:     grid;
+  place-items: center;
+  padding:     var(--space-7);
+  background:  rgba(20, 12, 4, 0.72);
+  animation:   modal-fade 0.2s ease both;
+}
+
+@keyframes modal-fade {
+  from { opacity: 0; }
+}
+
+.modal-overlay__dialog {
+  /* Dialog surface */
+  position:    relative;
+  width:       100%;
+  max-height:  90vh;
+  overflow-y:  auto;
+  background:  var(--card);
+  border:      var(--border-ink);
+  border-radius: var(--radius-xl);
+  box-shadow:  var(--shadow);
+  animation:   modal-zoom 0.3s var(--ease) both;
+}
+
+@keyframes modal-zoom {
+  from {
+    transform: scale(0.96);
+    opacity:   0;
+  }
+}
+
+/* Hover on the dialog itself (subtle — mostly for card surfaces inside) */
+.modal-overlay__dialog:hover {
+  box-shadow: var(--shadow);
+}
+
+/* Active — clicking outside to dismiss (tracked in JS, no pure CSS state) */
+
+.modal-overlay:focus-visible {
+  /* Focus on the overlay backdrop (when backdrop is interactive) */
+  outline: none; /* handled by dialog's close button */
+}
+
+.modal-overlay__dialog:focus-visible {
+  outline:        3px solid var(--blue);
+  outline-offset: 3px;
+}
+
+/* Disabled state (modal locked / loading) */
+.modal-overlay.is-disabled .modal-overlay__dialog {
+  opacity:        0.6;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   10. SPINNER
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   .spinner — Circular loading indicator
+   Size is controlled by width/height on the element; defaults to 14px.
+   Color inherits from currentColor.
+   -------------------------------------------------------------------------- */
+.spinner {
+  /* Default */
+  display:       inline-block;
+  width:         14px;
+  height:        14px;
+  border:        2px solid color-mix(in srgb, currentColor 30%, transparent);
+  border-top-color: currentColor;
+  border-radius: var(--radius-circle);
+  animation:     spinner-spin 0.8s linear infinite;
+}
+
+/* Size variants */
+.spinner.is-sm { width: 10px; height: 10px; }
+.spinner.is-lg { width: 24px; height: 24px; border-width: 3px; }
+
+@keyframes spinner-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hover / active — no visual change needed; animation runs continuously */
+
+/* Focus-visible (when spinner is used inside a focusable element) */
+.spinner:focus-visible {
+  outline: 3px solid var(--blue);
+}
+
+/* Disabled — stop animation */
+.spinner.is-disabled,
+.spinner[aria-hidden="true"] {
+  animation:      none;
+  opacity:        0.3;
+  pointer-events: none;
+}
+
+
+/* ==========================================================================
+   END OF COMPONENT LIBRARY
+   ========================================================================== */

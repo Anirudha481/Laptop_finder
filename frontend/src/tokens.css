@@ -1,0 +1,146 @@
+/* ==========================================================================
+   LAPTOPFINDER AI — Design Tokens
+   Autumn paper catalogue theme: warm stock, ink rules, maple / ginkgo / cobalt / teal.
+   Import this file before any other stylesheet.
+   ========================================================================== */
+
+:root {
+
+  /* --------------------------------------------------------------------------
+     SURFACE COLOURS
+     Light warm-paper palette
+     -------------------------------------------------------------------------- */
+  --paper:   #f5eedf;   /* page background — bleached linen */
+  --card:    #fffaf0;   /* raised card surface — cream white */
+  --sunk:    #ebe2cf;   /* recessed / sunken surface — warm sand */
+  --hover:   #e0d4bb;   /* hover surface state */
+
+  /* --------------------------------------------------------------------------
+     TEXT COLOURS
+     -------------------------------------------------------------------------- */
+  --ink:   #1d1712;                     /* primary text — near-black warm */
+  --ink-2: #5a4e40;                     /* secondary text — medium warm brown */
+  --muted: #6e6150;                     /* muted / placeholder text */
+  --line:  rgba(29, 23, 18, 0.16);     /* divider / border tint */
+
+  /* --------------------------------------------------------------------------
+     ACCENT COLOURS
+     -------------------------------------------------------------------------- */
+  --hot:     #d73a12;   /* primary CTA — maple red-orange */
+  --on-hot:  #fff;      /* text on --hot */
+
+  --blue:    #2b3fe0;   /* secondary accent — cobalt */
+  --on-blue: #fff;      /* text on --blue */
+
+  --sun:     #ffbf1f;   /* highlight / badge — ginkgo gold */
+
+  --teal:    #0e7c6b;   /* tertiary accent — dark teal */
+  --on-teal: #fff;      /* text on --teal */
+
+  --amazon:  #ffb000;   /* Amazon CTA — amber */
+
+  /* --------------------------------------------------------------------------
+     SHADOW + EASING
+     -------------------------------------------------------------------------- */
+  --shadow: 0 14px 30px -14px rgba(60, 30, 0, 0.4),
+            0 2px 4px rgba(60, 30, 0, 0.08);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --------------------------------------------------------------------------
+     FONT STACKS
+     -------------------------------------------------------------------------- */
+  --display: "Bricolage Grotesque", system-ui, "Segoe UI", sans-serif;
+  --body:    "Hanken Grotesk",     system-ui, "Segoe UI", sans-serif;
+
+  /* --------------------------------------------------------------------------
+     SPACING TOKENS
+     Base unit = 4px. Scale: 4 · 6 · 8 · 12 · 16 · 20 · 24 · 32 · 40 · 56
+     -------------------------------------------------------------------------- */
+  --space-1:  4px;
+  --space-2:  6px;
+  --space-3:  8px;
+  --space-4:  12px;
+  --space-5:  16px;
+  --space-6:  20px;
+  --space-7:  24px;
+  --space-8:  32px;
+  --space-9:  40px;
+  --space-10: 56px;
+
+  /* --------------------------------------------------------------------------
+     BORDER-RADIUS TOKENS
+     -------------------------------------------------------------------------- */
+  --radius-xs:     4px;
+  --radius-sm:     8px;
+  --radius-md:     12px;
+  --radius-lg:     18px;
+  --radius-xl:     22px;
+  --radius-pill:   99px;
+  --radius-circle: 50%;
+
+  /* --------------------------------------------------------------------------
+     Z-INDEX TOKENS
+     -------------------------------------------------------------------------- */
+  --z-card-badge: 2;
+  --z-dock:       850;
+  --z-navbar:     900;
+  --z-modal:      1000;
+
+  /* --------------------------------------------------------------------------
+     TRANSITION TOKENS
+     --transition-fast : micro-interactions (colour, opacity)
+     --transition-mid  : standard UI motion
+     --transition-slow : deliberate / large element motion
+     -------------------------------------------------------------------------- */
+  --transition-fast: 0.15s ease;
+  --transition-mid:  0.25s var(--ease);
+  --transition-slow: 0.3s  var(--ease);
+
+  /* --------------------------------------------------------------------------
+     BORDER TOKENS
+     -------------------------------------------------------------------------- */
+  --border-ink:    2px   solid var(--ink);   /* strong rule — primary outlines */
+  --border-soft:   1.5px solid var(--ink);   /* medium rule — secondary outlines */
+  --border-subtle: 1px   solid var(--line);  /* light rule — spec cells, dividers */
+
+}
+
+
+/* ==========================================================================
+   DARK MODE OVERRIDES
+   Applied via <body class="dark-mode"> toggle.
+   Only colour tokens are overridden; structural tokens remain unchanged.
+   ========================================================================== */
+body.dark-mode {
+
+  /* Surfaces */
+  --paper: #15110d;
+  --card:  #1f1913;
+  --sunk:  #2a2219;
+  --hover: #382d20;
+
+  /* Text */
+  --ink:   #f6efe2;
+  --ink-2: #cbbda6;
+  --muted: #a39583;
+  --line:  rgba(246, 239, 226, 0.16);
+
+  /* Accents */
+  --hot:     #ff6a3d;
+  --on-hot:  #1c0a03;
+
+  --blue:    #8794ff;
+  --on-blue: #0b0f33;
+
+  /* --sun and --amazon intentionally retain their light-mode values —
+     they read well on dark surfaces without adjustment.             */
+
+  --teal:    #3fd6b8;
+  --on-teal: #04201a;
+
+  /* Shadow (deeper on dark backgrounds) */
+  --shadow: 0 14px 30px -14px rgba(0, 0, 0, 0.7),
+            0 2px 4px rgba(0, 0, 0, 0.3);
+
+}
